@@ -1,5 +1,5 @@
-import EmailExistsAsync from '../api/EmailExistsAsync';
-import SignInFetchAsync from '../api/SignInFetchAsync';
+import EmailExistsAsync from '../api/Authorization.API/EmailExistsAsync';
+import SignInFetchAsync from '../api/Authorization.API/SignInFetchAsync';
 import SignInModelRequest from '../models/SignInModelRequest';
 import './../styles/SignInModal.css';
 import React, { useState, useEffect } from 'react';
@@ -72,7 +72,7 @@ const SignInModal = ({ onClose, onOpenSignUp }) => {
             setIsPasswordValid(false);
         } else if ((5 > password.length) || (password.length > 16)) {
             input.classList.add('error-input-border');
-            label.classList.add('invalid-feedback');
+            label.classList.add('error-label');
             label.textContent = "The number of characters in the password must be from 6 to 15";
             setIsPasswordValid(false);
         }
@@ -131,7 +131,7 @@ const SignInModal = ({ onClose, onOpenSignUp }) => {
             const label = document.getElementById('sign-in-password-label');
             if (input && label) { 
                 input.classList.add('error-input-border');
-                label.classList.add('invalid-feedback');
+                label.classList.add('error-label');
                 label.textContent = "Количество символов в пароле должно быть от 6 до 15";
             }
         }

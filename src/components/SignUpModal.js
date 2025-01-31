@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import EmailExistsAsync from '../api/EmailExistsAsync';
+import EmailExistsAsync from '../api/Authorization.API/EmailExistsAsync';
 import './../styles/SignUpModal.css';
 import SignUpRequestModel from '../models/SignUpRequestModel';
-import SignUpFetchAsync from '../api/SignUpFetchAsync';
+import SignUpFetchAsync from '../api/Authorization.API/SignUpFetchAsync';
 
 const SignUpModal = ({ onClose }) => {
     const [currentStage, setCurrentStage] = useState(0);
@@ -119,7 +119,7 @@ const SignUpModal = ({ onClose }) => {
             setIsPasswordValid(false);
         } else if ((5 > password.length) || (password.length > 16)) {
             input.classList.add('error-input-border');
-            label.classList.add('invalid-feedback');
+            label.classList.add('error-label');
             label.textContent = "The number of characters in the password must be from 6 to 15";
             setIsPasswordValid(false);
         }
@@ -315,7 +315,7 @@ const SignUpModal = ({ onClose }) => {
             const label = document.getElementById('sign-up-password-label');
             if (input && label) {
                 input.classList.add('error-input-border');
-                label.classList.add('invalid-feedback');
+                label.classList.add('error-label');
                 label.textContent = "Количество символов в пароле должно быть от 6 до 15";
             }
         }

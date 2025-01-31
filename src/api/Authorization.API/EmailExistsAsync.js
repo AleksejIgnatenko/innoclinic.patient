@@ -1,4 +1,4 @@
-import { AuthorizationAPI } from "./api";
+import { AuthorizationAPI } from "../api";
 
 async function EmailExistsAsync(email) {
     try {

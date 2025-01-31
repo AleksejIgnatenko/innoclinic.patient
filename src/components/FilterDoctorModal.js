@@ -30,8 +30,8 @@ const FilterDoctorModal = ({ onClose, doctors, onFilterDoctors,
 
     const applyFilters = () => {
         const filteredDoctors = doctors.filter(doctor =>
-            (selectedAddresses.length === 0 || selectedAddresses.includes(doctor.officeAddress)) &&
-            (selectedSpecialization === "" || doctor.specialization === selectedSpecialization)
+            (selectedAddresses.length === 0 || selectedAddresses.includes(doctor.office.address)) &&
+            (selectedSpecialization === "" || doctor.specialization.specializationName === selectedSpecialization)
         );
         onFilterDoctors(filteredDoctors);
         onClose();
@@ -53,7 +53,7 @@ const FilterDoctorModal = ({ onClose, doctors, onFilterDoctors,
                     <div className="filter-input-group">
                         <label>Office address</label>
                         <div className="filter-checkbox-group">
-                            {[...new Set(doctors.map(d => d.officeAddress))].map(address => (
+                            {[...new Set(doctors.map(d => d.office.address))].map(address => (
                                 <label key={address}>
                                     <input
                                         type="checkbox"
@@ -71,10 +71,9 @@ const FilterDoctorModal = ({ onClose, doctors, onFilterDoctors,
                         <label>Specialization</label>
                         <select value={selectedSpecialization} onChange={handleSpecializationChange}>
                             <option value="">All</option>
-                            <option value="Pediatrician">Pediatrician</option>
-                            <option value="Therapist">Therapist</option>
-                            <option value="Surgeon">Surgeon</option>
-                            <option value="Cardiologist">Cardiologist</option>
+                            {[...new Set(doctors.map(d => d.specialization.specializationName))].map(spec => (
+                                <option key={spec} value={spec}>{spec}</option>
+                            ))}
                         </select>
                     </div>
                     <div className="filter-buttons">

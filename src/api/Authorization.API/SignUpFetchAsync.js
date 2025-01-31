@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import { AuthorizationAPI } from './api';
+import { AuthorizationAPI } from '../api';
 
 async function SignUpFetchAsync(newAccount) {
     try {

@@ -5,11 +5,13 @@ import Cookies from 'js-cookie';
 import SignInModal from './SignInModal';
 import SignUpModal from './SignUpModal';
 import { Link } from 'react-router-dom';
+import MakeAnAppointmentModal from './MakeAnAppointmentModal';
 
 const Sidebar = () => {
     const [showSidebar, setShowSidebar] = useState(false);
     const [showSignInModal, setSignInModal] = useState(false);
     const [showSignUpModal, setShowSignUpModal] = useState(false);
+    const [showMakeAnAppointmentModel, setShowMakeAnAppointmentModel] = useState(false);
     const [currentTheme, setCurrentTheme] = useState(() => {
         return localStorage.getItem('theme') || 'light';
     });
@@ -34,10 +36,18 @@ const Sidebar = () => {
     const toggleSignInModal = () => {
         setSignInModal(!showSignInModal);
         setShowSignUpModal(false);
+        setShowMakeAnAppointmentModel(false);
     };
 
     const toggleSignUpModal = () => {
         setShowSignUpModal(!showSignUpModal);
+        setSignInModal(false);
+        setShowMakeAnAppointmentModel(false);
+    };
+
+    const toggleMakeAnAppointmentModel = () => {
+        setShowMakeAnAppointmentModel(!showMakeAnAppointmentModel);
+        setShowSignUpModal(false);
         setSignInModal(false);
     };
 
@@ -57,6 +67,7 @@ const Sidebar = () => {
         <>
             {showSignInModal && <SignInModal onClose={toggleSignInModal} onOpenSignUp={toggleSignUpModal} />}
             {showSignUpModal && <SignUpModal onClose={toggleSignUpModal} />}
+            {showMakeAnAppointmentModel && <MakeAnAppointmentModal onClose={toggleMakeAnAppointmentModel} onOpenSignIn={toggleSignInModal}/>}
             <div className={`sidebar ${showSidebar ? '' : 'close'}`}>
                 <div className="logo-details">
                     <i className='bx bx-menu' onClick={toggleSidebar}></i>
@@ -75,10 +86,10 @@ const Sidebar = () => {
                     <li>
                         <Link to="/doctors">
                             <i className='bx bx-user-circle'></i>
-                            <span className="link_name">Doctors1</span>
+                            <span className="link_name">Doctors</span>
                         </Link>
                         <ul className="sub-menu blank">
-                            <li><Link to="/doctors" className="link_name">Doctors1</Link></li>
+                            <li><Link to="/doctors" className="link_name">Doctors</Link></li>
                         </ul>
                     </li>
                     <li>
@@ -96,6 +107,15 @@ const Sidebar = () => {
                             <li><Link to="/services?tab=Analyses">Analyses</Link></li>
                         </ul>
                     </li>
+                    <li>
+                        <Link onClick={toggleMakeAnAppointmentModel}>
+                            <i className='bx bx-plus'></i>
+                            <span className="link_name">Make an appointment</span>
+                        </Link>
+                        <ul className="sub-menu blank">
+                            <li><Link className="link_name" onClick={toggleMakeAnAppointmentModel}>Make an appointment</Link></li>
+                        </ul>
+                    </li>
                     <li onClick={handleSubMenuClick}>
                         <div className="icon-link">
                             <Link to="/">
@@ -109,15 +129,6 @@ const Sidebar = () => {
                             <li><Link to="/">Web Design</Link></li>
                             <li><Link to="/">Login Form</Link></li>
                             <li><Link to="/">Card Design</Link></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <Link to="/">
-                            <i className='bx bx-pie-chart-alt-2'></i>
-                            <span className="link_name">Analytics</span>
-                        </Link>
-                        <ul className="sub-menu blank">
-                            <li><Link className="link_name" to="/">Analytics</Link></li>
                         </ul>
                     </li>
                     <li>

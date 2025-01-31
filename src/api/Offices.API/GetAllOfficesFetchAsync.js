@@ -1,8 +1,8 @@
-import { ProfilesAPI } from "./api";
+import { OfficesAPI } from "../api";
 
-async function GetAllDoctorsFetchAsync() {
+async function GetAllOfficesFetchAsync() {
     try {
-        const response = await fetch(`${ProfilesAPI}/Doctors`, {
+        const response = await fetch(`${OfficesAPI}/Office`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -10,9 +10,9 @@ async function GetAllDoctorsFetchAsync() {
         });
 
         const data = await response.json();
-        console.log(data);
+        
         if (response.ok) {
-           
+           return data;
         }
     } catch (error) {
         console.error('Error in getting all doctors:', error);
@@ -20,4 +20,4 @@ async function GetAllDoctorsFetchAsync() {
     }
 }
 
-export default GetAllDoctorsFetchAsync;
+export default GetAllOfficesFetchAsync;

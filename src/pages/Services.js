@@ -1,11 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import "./../styles/Services.css";
+import GetAllServicesByCategoryFetchAsync from '../api/Services.API/GetAllServicesByCategoryFetchAsync';
+import ServiceCard from '../components/ServiceCard';
 
 function Services() {
     const location = useLocation();
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('Consultations');
+    const [consultations, setConsultations] = useState([]);
+    const [diagnostics, setDiagnostics] = useState([]);
+    const [analyses, setAnalyses] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const fetchedServices = await GetAllServicesByCategoryFetchAsync();
+            fetchedServices.forEach(category => {
+                if (category.categoryName === 'Consultation') {
+                    setConsultations(category.services);
+                } else if (category.categoryName === 'Diagnostics') {
+                    setDiagnostics(category.services);
+                } else if (category.categoryName === 'Analyses') {
+                    setAnalyses(category.services);
+                }
+            });
+        };
+
+        fetchData();
+    }, []);
 
     useEffect(() => {
         const tab = new URLSearchParams(location.search).get('tab');
@@ -16,7 +38,7 @@ function Services() {
 
     const handleTabClick = (tab) => {
         setActiveTab(tab);
-        navigate(`/services?tab=${tab}`); 
+        navigate(`/services?tab=${tab}`);
     };
 
     return (
@@ -42,17 +64,41 @@ function Services() {
                 </button>
             </ul>
 
+
+
             <div className='tabs-container'>
                 <div data-content className={activeTab === 'Consultations' ? 'is-active' : ''} id="Consultations">
-                    <h2>Consultations</h2>
+                    <h2 className='service-title'>Consultations</h2>
+                    <div className='container-service-card'>
+                        {consultations.map(item => (
+                            <ServiceCard serviceName={item.serviceName} price={item.price} />
+                        ))}
+                    </div>
+                    {/* <div className='container-service-card'>
+                        <ServiceCard serviceName={"1"} price={1} />
+                        <ServiceCard serviceName={"1"} price={1} />
+                        <ServiceCard serviceName={"1"} price={1} />
+                        <ServiceCard serviceName={"1"} price={1} />
+                        <ServiceCard serviceName={"1"} price={1} />
+                    </div> */}
                 </div>
 
                 <div data-content className={activeTab === 'Diagnostics' ? 'is-active' : ''} id="Diagnostics">
-                    <h2>Diagnostics</h2>
+                    <h2 className='service-title'>Diagnostics</h2>
+                    <div className='container-service-card'>
+                        {diagnostics.map(item => (
+                            <ServiceCard serviceName={item.serviceName} price={item.price} />
+                        ))}
+                    </div>
                 </div>
 
                 <div data-content className={activeTab === 'Analyses' ? 'is-active' : ''} id="Analyses">
-                    <h2>Analyses</h2>
+                    <h2 className='service-title'>Analyses</h2>
+                    <div className='container-service-card'>
+                        {analyses.map(item => (
+                            <ServiceCard serviceName={item.serviceName} price={item.price} />
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>

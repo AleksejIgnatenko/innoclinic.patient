@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie';
-import { AuthorizationAPI } from './api';
-import { comparePassword } from '../utils/PasswordUtils';
+import { AuthorizationAPI } from '../api';
+import { comparePassword } from '../../utils/PasswordUtils';
 
 async function SignInFetchAsync(signInModel) {
     try {

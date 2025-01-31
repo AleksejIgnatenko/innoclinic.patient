@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Map, Marker } from 'pigeon-maps';
 import './../styles/CustomMap.css';
 
-const CustomMap = ({ doctors, onClose }) => {
+const CustomMap = ({ offices, onClose }) => {
     const defaultCenter = [52.4368, 31.0164];
 
     useEffect(() => {
@@ -22,12 +22,11 @@ const CustomMap = ({ doctors, onClose }) => {
     };
 
     return (
-        <div class="modal-overlay">
-            <button class="close-button" onClick={onClose}>X</button>
+        <div className="modal-overlay">
+            <button className="close-button" onClick={onClose}>X</button>
             <Map center={defaultCenter} zoom={10} width="80%" height="400px" provider={osmProvider}>
-                {doctors.map((doctor, index) => {
-                    const anchor = [parseFloat(doctor.lat), parseFloat(doctor.lng)];
-
+                {offices.map((office, index) => {
+                    const anchor = [parseFloat(office.longitude), parseFloat(office.latitude)];
                     return (
                         <Marker key={index} anchor={anchor} payload={index}>
                             <div style={{ color: 'red', fontSize: '24px' }}>🏥</div>

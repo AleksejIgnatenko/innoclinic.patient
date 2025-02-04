@@ -146,9 +146,13 @@
     background-color: #ccc; 
     cursor: not-allowed; 
     pointer-events: none;
+    border: none;
+    height: 38px;
+    padding: 0 25px;
+    border-radius: 5px;
 }
 
-.sign-up-btn {
+.signup-btn {
     border: none;
     background-color: transparent;
     color: var(--accent);

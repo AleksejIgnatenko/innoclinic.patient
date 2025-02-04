@@ -176,8 +176,9 @@ const SignInModal = ({ onClose, onOpenSignUp }) => {
                 </div>
                 <div class="btn-group">
                     <a 
-                        class="sign-up-btn"
-                        onClick={onOpenSignUp}>
+                        class="signup-btn"
+                        onClick={onOpenSignUp}
+                    >
                         Sign up
                     </a>
                     <button 

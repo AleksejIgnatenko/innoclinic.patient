@@ -74,10 +74,6 @@
     color: var(--appointmentModal-fg);
 }
 
-.appointment-input-wrapper input[type='date']::-webkit-calendar-picker-indicator {
-    filter: invert(56%) sepia(94%) saturate(3177%) hue-rotate(88deg) brightness(102%) contrast(101%);
-}
-
 .default-input-border {
     border: 1px solid var(--border-color-appointmentModal);
 }
@@ -144,6 +140,7 @@
     color: white;
     border: none;
     height: 38px;
+    width: 100%;
     padding: 0 25px;
     border-radius: 5px;
     cursor: pointer;
@@ -155,7 +152,7 @@
     pointer-events: none;
 }
 
-.sign-up-btn {
+/* .sign-up-btn {
     border: none;
     background-color: transparent;
     color: var(--accent);
@@ -163,7 +160,7 @@
     cursor: pointer;
     height: 35px;
     padding: 10px 5px;
-}
+} */
 
 .filtred-list {
     cursor: pointer;

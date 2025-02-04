@@ -2,7 +2,7 @@ import { ServicesAPI } from "../api";
 
 async function GetAllServicesByCategoryFetchAsync() {
     try {
-        const response = await fetch(`${ServicesAPI}/MedicalService/get-all-services-by-category`, {
+        const response = await fetch(`${ServicesAPI}/MedicalService/all-services-by-category`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'

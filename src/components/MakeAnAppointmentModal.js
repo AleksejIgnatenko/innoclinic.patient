@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import './../styles/MakeAnAppointmentModal.css';
 import Cookies from 'js-cookie';
-import GetAllSpecializationFetchAsync from '../api/Services.API/GetAllSpecializationFetchAsync';
-import GetAllMedicalServiceFetchAsync from '../api/Services.API/GetAllMedicalServiceFetchAsync';
-import GetAllOfficesFetchAsync from '../api/Offices.API/GetAllOfficesFetchAsync';
 import GetAllDoctorsAtWorkFetchAsync from '../api/Profiles.API/GetAllDoctorsAtWorkFetchAsync';
+import GetAllActiveOfficesFetchAsync from '../api/Offices.API/GetAllActiveOfficesFetchAsync';
+import GetAllActiveSpecializationsFetchAsync from '../api/Services.API/GetAllActiveSpecializationsFetchAsync';
+import GetAllActiveMedicalServicesFetchAsync from '../api/Services.API/GetAllActiveMedicalServicesFetchAsync';
+import AppointmentModelRequest from '../models/AppointmentModelRequest';
+import CreateAppointmentFetchAsync from '../api/Appointments.API/CreateAppointmentFetchAsync';
 
 const MakeAnAppointmentModal = ({ onClose, onOpenSignIn }) => {
     const [selectedSpecialization, setSelectedSpecialization] = useState('');
@@ -16,9 +18,10 @@ const MakeAnAppointmentModal = ({ onClose, onOpenSignIn }) => {
 
     const [selectedService, setSelectedService] = useState('');
     const [selectedServiceId, setSelectedServiceId] = useState('');
+    const [filtredServices, setFiltredServices] = useState([]);
     
-    const [selectedOffice, setSelectedOffice] = useState('');
     const [selectedOfficeId, setSelectedOfficeId] = useState('');
+    const [filtredOffice, setFiltredOffice] = useState([]);
 
     const [selectedDate, setSelectedDate] = useState('');
     const [selectedTimeSlot, setSelectedTimeSlot] = useState('');
@@ -42,114 +45,20 @@ const MakeAnAppointmentModal = ({ onClose, onOpenSignIn }) => {
 
     useEffect(() => {
         const fetchData = async () => {
-            // const fetchedSpecializations = await GetAllSpecializationFetchAsync();
-            // setSpecializations(fetchedSpecializations);
-            // console.log(fetchedSpecializations)
-            const fetchedSpecializations = [
-                {
-                    "id": "a399b458-6f07-498c-b166-e96ad2cd3fce",
-                    "specializationName": "test",
-                    "isActive": true
-                },
-
-                {
-                    "id": "a399b458-6f07-498c-b166-e96ad2cd3fc1",
-                    "specializationName": "test1",
-                    "isActive": true
-                },
-            ]
+            const fetchedSpecializations = await GetAllActiveSpecializationsFetchAsync();
             setSpecializations(fetchedSpecializations);
 
-            // const fetchedDoctors = await GetAllDoctorsAtWorkFetchAsync();
-            // setDoctors(fetchedDoctors);
-            // console.log(fetchedDoctors)
-
-            const fetchedDoctors = [
-                {
-                    "id": "ae476167-8c6e-409b-be8b-4143040f1ae8",
-                    "firstName": "Иванов",
-                    "lastName": "Иван",
-                    "middleName": "Иванович",
-                    "dateOfBirth": "2025-01-31T13:45:21.888",
-                    "account": {
-                        "id": "c8ec10ea-fbc6-44af-73e7-08dd420ba51a",
-                        "email": "test@gmail.com",
-                        "phoneNumber": "+375(29)000-00-00",
-                        "photoId": "00000000-0000-0000-0000-000000000000"
-                    },
-                    "specialization": {
-                        "id": "a399b458-6f07-498c-b166-e96ad2cd3fce",
-                        "specializationName": "test",
-                        "isActive": true
-                    },
-                    "office": {
-                        "id": "2aefd719-6a52-4d5b-9f77-b086ce6d7e7e",
-                        "address": "гомель пушкина 3",
-                        "registryPhoneNumber": "string",
-                        "isActive": true
-                    },
-                    "careerStartYear": "2025-01-31T13:45:21.888",
-                    "status": "At work"
-                },
-
-                {
-                    "id": "ae476167-8c6e-409b-be8b-4143040f1ae9",
-                    "firstName": "Иванов1",
-                    "lastName": "Иван",
-                    "middleName": "Иванович",
-                    "dateOfBirth": "2025-01-31T13:45:21.888",
-                    "account": {
-                        "id": "c8ec10ea-fbc6-44af-73e7-08dd420ba51a",
-                        "email": "test@gmail.com",
-                        "phoneNumber": "+375(29)000-00-00",
-                        "photoId": "00000000-0000-0000-0000-000000000000"
-                    },
-                    "specialization": {
-                        "id": "a399b458-6f07-498c-b166-e96ad2cd3fc1",
-                        "specializationName": "test",
-                        "isActive": true
-                    },
-                    "office": {
-                        "id": "2aefd719-6a52-4d5b-9f77-b086ce6d7e7e",
-                        "address": "гомель пушкина 3",
-                        "registryPhoneNumber": "string",
-                        "isActive": true
-                    },
-                    "careerStartYear": "2025-01-31T13:45:21.888",
-                    "status": "At work"
-                },
-            ]
+            const fetchedDoctors = await GetAllDoctorsAtWorkFetchAsync();
             setDoctors(fetchedDoctors);
 
-            // const fetchedServices = await GetAllMedicalServiceFetchAsync();
-            // setServices(fetchedServices);
-            // console.log(fetchedServices)
-            const fetchedServices = [
-                {
-                    "id": "94d263f7-b8c5-485e-a1d7-a8f1664de81b",
-                    "serviceCategory": {
-                        "id": "063b4b1e-f634-4aa5-a4c6-0f8c18fb8007",
-                        "categoryName": "Diagnostics",
-                        "timeSlotSize": 30
-                    },
-                    "serviceName": "2",
-                    "price": 0,
-                    "specialization": {
-                        "id": "a399b458-6f07-498c-b166-e96ad2cd3fce",
-                        "specializationName": "test",
-                        "isActive": true
-                    },
-                    "isActive": true
-                },
-            ]
+            const fetchedServices = await GetAllActiveMedicalServicesFetchAsync();
             setServices(fetchedServices);
 
-            // const fetchedOffices = await GetAllOfficesFetchAsync();
-            // setOffices(fetchedOffices);
-
+            const fetchedOffices = await GetAllActiveOfficesFetchAsync();
+            setOffices(fetchedOffices);
         };
 
-        fetchData();
+        //fetchData();
     }, []);
 
     useEffect(() => {
@@ -174,7 +83,7 @@ const MakeAnAppointmentModal = ({ onClose, onOpenSignIn }) => {
         doctor.middleName.toLowerCase().includes(filterDoctor.toLowerCase())
     );
 
-    const filteredServices = services.filter(service =>
+    const filteredServices = filtredServices.filter(service =>
         service.serviceName.toLowerCase().includes(filterServices.toLowerCase())
     );
 
@@ -194,7 +103,12 @@ const MakeAnAppointmentModal = ({ onClose, onOpenSignIn }) => {
     };
 
     const handleInputOfficesChange = (e) => {
-        setSelectedOffice(e.target.value);
+        setSelectedOfficeId(e.target.value);
+        const label = document.getElementById('appointment-office-label');
+        const input = e.target;
+        input.classList.remove('error-input-border');
+        label.classList.remove('error-label');
+        label.textContent = 'Office';
     };
 
     const handleTimeSlotChange = (e) => {
@@ -202,22 +116,43 @@ const MakeAnAppointmentModal = ({ onClose, onOpenSignIn }) => {
     };
 
     const handleListClick = (id, item, type) => {
+        const label = document.getElementById(`appointment-${type}-label`);
+        const input = document.getElementById(`appointment-${type}-input`)
         if (type === 'specialization') {
-            setSelectedSpecialization(item);
+            setSelectedSpecialization(item.specializationName);
             setSelectedSpecializationId(id);
             setFilterSpecialization('');
 
             const filteredDoctors = doctors.filter(doctor => doctor.specialization.id === id);
             setFiltredDoctors(filteredDoctors);
 
+            const filtredServices = services.filter(service => service.specialization.id === id);
+            setFiltredServices(filtredServices);
+
+            input.classList.remove('error-input-border');
+            label.classList.remove('error-label');
+            label.textContent = `${type}`; 
         } else if (type === 'doctor') {
-            setSelectedDoctor(item);
+            setSelectedDoctor(item.firstName + " " + item.lastName + " " + item.middleName);
             setSelectedDoctorId(id);
             setFilterDoctor('');
-        } else if (type === 'services') {
-            setSelectedService(item);
+            
+            const filteredOffice = offices.filter(office => office.id === item.office.id);
+            setFiltredOffice(filteredOffice);
+            // setSelectedOfficeId(filteredOffice[0].id);
+            // setSelectedOffice(filterDoctor.address);
+
+            input.classList.remove('error-input-border');
+            label.classList.remove('error-label');
+            label.textContent = `${type}`; 
+        } else if (type === 'service') {
+            setSelectedService(item.serviceName);
             setSelectedServiceId(id);
             setFilterServices('');
+
+            input.classList.remove('error-input-border');
+            label.classList.remove('error-label');
+            label.textContent = `${type}`; 
         }
     };
 
@@ -230,24 +165,48 @@ const MakeAnAppointmentModal = ({ onClose, onOpenSignIn }) => {
     };
 
     const handleServicesBlur = (event) => {
-        handleInputBlur(event, 'services', filteredServices.serviceName, setFilterServices, setSelectedService);
+        handleInputBlur(event, 'service', filteredServices.serviceName, setFilterServices, setSelectedService);
+    };
+
+    const handleOfficeBlur = (event) => {
+        const label = document.getElementById('appointment-office-label');
+        const input = event.target;
+
+        if (!input.value) {
+            input.classList.add('error-input-border');
+            label.classList.add('error-label');
+            label.textContent = 'Please, choose the office';
+        } else {
+            input.classList.remove('error-input-border');
+            label.classList.remove('error-label');
+            label.textContent = 'Office';
+        }
     };
 
     const handleInputBlur = (event, type, filteredItems, setFilter, setSelected) => {
         const input = event.target;
         const label = document.getElementById(`appointment-${type}-label`);
-    
-        if (filteredItems && filteredItems.length === 1) {
-            setSelected(filteredItems[0]);
+
+        const inputValue = input.value.trim();
+        const itemsArray = Array.isArray(filteredItems) ? filteredItems : [];
+
+        if (!inputValue) {
+            input.classList.add('error-input-border');
+            label.classList.add('error-label');
+            label.textContent = `Please, choose the ${type}`;
+        } else if (itemsArray.length === 1) {
+            setSelected(itemsArray[0]);
             setFilter('');
-        } else if (filteredItems && filteredItems.length === 0) {
+        } else if (itemsArray.length === 0) {
             input.classList.add('error-input-border');
             label.classList.add('error-label');
             label.textContent = `Invalid ${type} name`;
-        } else if (label) {
-            label.textContent = type.charAt(0).toUpperCase() + type.slice(1);
-            input.classList.remove('error-input-border');
-            label.classList.remove('error-label');
+        }
+    
+        if (inputValue && !itemsArray.includes(inputValue)) {
+            input.classList.add('error-input-border');
+            label.classList.add('error-label');
+            label.textContent = `Invalid ${type} name`; 
         }
     };
 
@@ -263,7 +222,7 @@ const MakeAnAppointmentModal = ({ onClose, onOpenSignIn }) => {
             input.classList.add('error-input-border');
             if (label) {
                 label.classList.add('error-label');
-                label.textContent = 'Invalid date';
+                label.textContent = 'Please, select the date';
             }
         } else {
             if (label) {
@@ -274,20 +233,18 @@ const MakeAnAppointmentModal = ({ onClose, onOpenSignIn }) => {
         }
     };
 
-    const handleMakeAppointment = () => {
-        if(!isUserLoggedIn) {
-            alert('Sign in to make an appointment');
-            onOpenSignIn();
-        }
-        console.log('Appointment Details:');
-        console.log('Specialization:', selectedSpecializationId);
-        console.log('Doctor:', selectedDoctorId);
-        console.log('Service:', selectedServiceId);
-        console.log('Office:', selectedOffice);
-        console.log('Date:', selectedDate);
-        console.log('Time Slot:', selectedTimeSlot);
+    const isFormValid = () => {
+        return selectedSpecializationId !== '' && selectedDoctorId !== '' && selectedServiceId !== '' && 
+        selectedOfficeId !== '' && selectedDate !== '' && selectedTimeSlot !== '';
+    };
 
-        // onClose();
+    async function toggleCreateAppointmentAsync () {
+        // if(!isUserLoggedIn) {
+        //     alert('Sign in to make an appointment');
+        //     onOpenSignIn();
+        // }
+        const appointmentModelRequest = new AppointmentModelRequest("08a0707f-8fc7-48e8-93e5-6caf2d3ac9ce", selectedDoctorId, selectedServiceId, selectedDate, selectedTimeSlot, false);
+        await CreateAppointmentFetchAsync(appointmentModelRequest);
     };
 
 
@@ -301,6 +258,7 @@ const MakeAnAppointmentModal = ({ onClose, onOpenSignIn }) => {
                 <div className="appointment-inputs">
                     <div className="appointment-input-wrapper">
                         <input
+                            id="appointment-specialization-input"
                             value={selectedSpecialization}
                             onChange={handleInputSpecializationChange}
                             onBlur={handleSpecializationBlur}
@@ -312,7 +270,7 @@ const MakeAnAppointmentModal = ({ onClose, onOpenSignIn }) => {
                         {filterSpecialization && (
                             <div className="filtred-list">
                                 {filteredSpecializations.map(specialization => (
-                                    <div key={specialization.id} onClick={() => handleListClick(specialization.id, specialization.specializationName, 'specialization')}>
+                                    <div key={specialization.id} onClick={() => handleListClick(specialization.id, specialization, 'specialization')}>
                                         {specialization.specializationName}
                                     </div>
                                 ))}
@@ -321,6 +279,7 @@ const MakeAnAppointmentModal = ({ onClose, onOpenSignIn }) => {
                     </div>
                     <div className="appointment-input-wrapper">
                         <input
+                            id="appointment-doctor-input"
                             value={selectedDoctor}
                             onChange={handleInputDoctorChange}
                             onBlur={handleDoctorBlur}
@@ -332,7 +291,7 @@ const MakeAnAppointmentModal = ({ onClose, onOpenSignIn }) => {
                         {filterDoctor && (
                             <div className="filtred-list">
                                 {filteredDoctors.map(doctor => (
-                                    <div key={doctor.id} onClick={() => handleListClick(doctor.id, doctor.firstName + doctor.lastName + doctor.middleName, 'doctor')}>
+                                    <div key={doctor.id} onClick={() => handleListClick(doctor.id, doctor, 'doctor')}>
                                         {doctor.firstName + " " + doctor.lastName + " " + doctor.middleName}
                                     </div>
                                 ))}
@@ -341,6 +300,7 @@ const MakeAnAppointmentModal = ({ onClose, onOpenSignIn }) => {
                     </div>
                     <div className="appointment-input-wrapper">
                         <input
+                            id="appointment-service-input"
                             value={selectedService}
                             onChange={handleInputServicesChange}
                             onBlur={handleServicesBlur}
@@ -348,11 +308,11 @@ const MakeAnAppointmentModal = ({ onClose, onOpenSignIn }) => {
                             placeholder=" "
                             required
                         />
-                        <label className="input-label" id="appointment-services-label">Services</label>
+                        <label className="input-label" id="appointment-service-label">Service</label>
                         {filterServices && (
                             <div className="filtred-list">
                                 {filteredServices.map(service => (
-                                    <div key={service.id} onClick={() => handleListClick(service.id, service.serviceName, 'services')}>
+                                    <div key={service.id} onClick={() => handleListClick(service.id, service, 'service')}>
                                         {service.serviceName}
                                     </div>
                                 ))}
@@ -361,17 +321,18 @@ const MakeAnAppointmentModal = ({ onClose, onOpenSignIn }) => {
                     </div>
                     <div className="appointment-input-wrapper">
                         <select
-                            value={selectedOffice}
+                            value={selectedOfficeId}
                             onChange={handleInputOfficesChange}
+                            onBlur={handleOfficeBlur}
                             className="input default-input-border custom-select"
                             required
                         >
                             <option value="" disabled>Select an office</option>
-                            {offices.map(office => (
-                                <option key={office} value={office}>{office.address}</option>
+                            {filtredOffice.map(office => (
+                                <option key={office.id} value={office.id}>{office.address}</option>
                             ))}
                         </select>
-                        <label className="input-label label-active" id="appointment-offices-label">Office</label>
+                        <label className="input-label label-active" id="appointment-office-label">Office</label>
                     </div>
                     <div className="appointment-input-wrapper">
                         <input
@@ -401,7 +362,13 @@ const MakeAnAppointmentModal = ({ onClose, onOpenSignIn }) => {
                     </div>
                 </div>
                 <div className="btn-group">
-                    <button className='appointment-btn' onClick={handleMakeAppointment}>Confirm</button>
+                    <button 
+                        className={`appointment-btn ${!isFormValid() ? 'disabled-appointment-btn' : ''}`}
+                        onClick={toggleCreateAppointmentAsync}
+                        disabled={!isFormValid()}
+                    >
+                        Confirm
+                    </button>
                 </div>
             </div>
         </div>

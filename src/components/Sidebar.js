@@ -7,7 +7,7 @@ import SignUpModal from './SignUpModal';
 import { Link } from 'react-router-dom';
 import MakeAnAppointmentModal from './MakeAnAppointmentModal';
 
-const Sidebar = () => {
+const Sidebar = ({ onOpenSignUp }) => {
     const [showSidebar, setShowSidebar] = useState(false);
     const [showSignInModal, setSignInModal] = useState(false);
     const [showSignUpModal, setShowSignUpModal] = useState(false);
@@ -46,9 +46,16 @@ const Sidebar = () => {
     };
 
     const toggleMakeAnAppointmentModel = () => {
-        setShowMakeAnAppointmentModel(!showMakeAnAppointmentModel);
-        setShowSignUpModal(false);
-        setSignInModal(false);
+        if (showMakeAnAppointmentModel) {
+            const result = window.confirm('Do you really want to exit? Your appointment will not be saved.');
+            if (result) {
+                setShowMakeAnAppointmentModel(!showMakeAnAppointmentModel);
+                setShowSignUpModal(false);
+                setSignInModal(false);
+            }
+        } else {
+            setShowMakeAnAppointmentModel(!showMakeAnAppointmentModel);
+        }
     };
 
     let isUserLoggedIn = Cookies.get('refreshToken') !== undefined;
@@ -66,7 +73,7 @@ const Sidebar = () => {
     return (
         <>
             {showSignInModal && <SignInModal onClose={toggleSignInModal} onOpenSignUp={toggleSignUpModal} />}
-            {showSignUpModal && <SignUpModal onClose={toggleSignUpModal} />}
+            {showSignUpModal && <SignUpModal onClose={toggleSignUpModal} onOpenSignIn={toggleSignInModal}/>}
             {showMakeAnAppointmentModel && <MakeAnAppointmentModal onClose={toggleMakeAnAppointmentModel} onOpenSignIn={toggleSignInModal}/>}
             <div className={`sidebar ${showSidebar ? '' : 'close'}`}>
                 <div className="logo-details">

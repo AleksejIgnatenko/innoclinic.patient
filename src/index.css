@@ -66,3 +66,7 @@ a {
   color: #ffffff;
   z-index: 1;
 }
+
+input[type='date']::-webkit-calendar-picker-indicator {
+  filter: invert(56%) sepia(94%) saturate(3177%) hue-rotate(88deg) brightness(102%) contrast(101%);
+}

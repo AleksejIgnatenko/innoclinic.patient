@@ -1,38 +1,38 @@
 :root {
-  --light-signInUpModal: #ffffff;
-  --dark-signInUpModal: #171717;
+  --light-signUpModal: #ffffff;
+  --dark-signUpModal: #171717;
 
-  --light-signInUpModal-border: #999;
-  --dark-signInUpModal-border: #333;
+  --light-signUpModal-border: #999;
+  --dark-signUpModal-border: #333;
 
   --error: #c91818;
 }
 
 [data-theme='light'] {
-  --signInUpModal-bg: var(--light-signInUpModal);
-  --signInUpModal-fg: var(--dark-signInUpModal);
+  --signUpModal-bg: var(--light-signUpModal);
+  --signUpModal-fg: var(--dark-signUpModal);
 
-  --border-color-signInUpModal: var(--light-signInUpModal-border);
+  --border-color-signUpModal: var(--light-signUpModal-border);
 }
 
 [data-theme='dark'] {
-  --signInUpModal-bg: var(--dark-signInUpModal);
-  --signInUpModal-fg: var(--light-signInUpModal);
+  --signUpModal-bg: var(--dark-signUpModal);
+  --signUpModal-fg: var(--light-signUpModal);
 
-  --border-color-signInUpModal: var(--dark-signInUpModal-border);
+  --border-color-signUpModal: var(--dark-signUpModal-border);
 }
 
 .sign-up-container {
   max-width: 450px;
   width: 100%;
-  border: 1px solid var(--border-color-signInUpModal);
+  border: 1px solid var(--border-color-signUpModal);
   margin: auto;
   margin-top: 4rem;
   border-radius: 10px;
   padding: 2rem;
   height: auto;
   box-sizing: border-box; 
-  background-color: var(--signInUpModal-bg); 
+  background-color: var(--signUpModal-bg); 
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
   z-index: 1001;
 }
@@ -69,11 +69,11 @@
   outline: none;
   border-radius: 5px;
   position: relative;
-  color: var(--signInUpModal-fg);
+  color: var(--signUpModal-fg);
 }
 
 .default-input-border {
-  border: 1px solid var(--border-color-signInUpModal);
+  border: 1px solid var(--border-color-signUpModal);
 }
 
 .input-label {
@@ -99,7 +99,7 @@
   top: -7px !important;
   color: var(--error) !important;
   font-size: 13px !important;
-  background-color: var(--signInUpModal-bg) !important;
+  background-color: var(--signUpModal-bg) !important;
   z-index: 2 !important;
 }
 
@@ -111,7 +111,7 @@
   top: -7px;
   color: var(--accent);
   font-size: 13px;
-  background-color: var(--signInUpModal-bg);
+  background-color: var(--signUpModal-bg);
   z-index: 2;
 }
 

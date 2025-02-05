@@ -8,34 +8,7 @@ import Services from './pages/Services';
 import CreateProfile from './pages/CreateProfile';
 
 function App() {
-      const [showSignInModal, setSignInModal] = useState(false);
-      const [showSignUpModal, setShowSignUpModal] = useState(false);
-      const [showMakeAnAppointmentModel, setShowMakeAnAppointmentModel] = useState(false);
 
-  const toggleSignInModal = () => {
-    setSignInModal(!showSignInModal);
-    setShowSignUpModal(false);
-    setShowMakeAnAppointmentModel(false);
-};
-
-const toggleSignUpModal = () => {
-    setShowSignUpModal(!showSignUpModal);
-    setSignInModal(false);
-    setShowMakeAnAppointmentModel(false);
-};
-
-const toggleMakeAnAppointmentModel = () => {
-    if (showMakeAnAppointmentModel) {
-        const result = window.confirm('Do you really want to exit? Your appointment will not be saved.');
-        if (result) {
-            setShowMakeAnAppointmentModel(!showMakeAnAppointmentModel);
-            setShowSignUpModal(false);
-            setSignInModal(false);
-        }
-    } else {
-        setShowMakeAnAppointmentModel(!showMakeAnAppointmentModel);
-    }
-};
 
   return (
     <Router>

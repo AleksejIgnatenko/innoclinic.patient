@@ -7,7 +7,7 @@ import SignUpModal from './SignUpModal';
 import { Link } from 'react-router-dom';
 import MakeAnAppointmentModal from './MakeAnAppointmentModal';
 
-const Sidebar = ({ onOpenSignUp }) => {
+const Sidebar = () => {
     const [showSidebar, setShowSidebar] = useState(false);
     const [showSignInModal, setSignInModal] = useState(false);
     const [showSignUpModal, setShowSignUpModal] = useState(false);

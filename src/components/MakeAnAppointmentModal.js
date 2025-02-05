@@ -19,7 +19,7 @@ const MakeAnAppointmentModal = ({ onClose, onOpenSignIn }) => {
     const [selectedService, setSelectedService] = useState('');
     const [selectedServiceId, setSelectedServiceId] = useState('');
     const [filtredServices, setFiltredServices] = useState([]);
-    
+
     const [selectedOfficeId, setSelectedOfficeId] = useState('');
     const [filtredOffice, setFiltredOffice] = useState([]);
 
@@ -45,20 +45,24 @@ const MakeAnAppointmentModal = ({ onClose, onOpenSignIn }) => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const fetchedSpecializations = await GetAllActiveSpecializationsFetchAsync();
-            setSpecializations(fetchedSpecializations);
+            try {
+                const fetchedSpecializations = await GetAllActiveSpecializationsFetchAsync();
+                setSpecializations(fetchedSpecializations);
 
-            const fetchedDoctors = await GetAllDoctorsAtWorkFetchAsync();
-            setDoctors(fetchedDoctors);
+                const fetchedDoctors = await GetAllDoctorsAtWorkFetchAsync();
+                setDoctors(fetchedDoctors);
 
-            const fetchedServices = await GetAllActiveMedicalServicesFetchAsync();
-            setServices(fetchedServices);
+                const fetchedServices = await GetAllActiveMedicalServicesFetchAsync();
+                setServices(fetchedServices);
 
-            const fetchedOffices = await GetAllActiveOfficesFetchAsync();
-            setOffices(fetchedOffices);
+                const fetchedOffices = await GetAllActiveOfficesFetchAsync();
+                setOffices(fetchedOffices);
+            } catch (error) {
+                console.error('Error services:', error);
+            }
         };
 
-        //fetchData();
+        fetchData();
     }, []);
 
     useEffect(() => {
@@ -131,12 +135,12 @@ const MakeAnAppointmentModal = ({ onClose, onOpenSignIn }) => {
 
             input.classList.remove('error-input-border');
             label.classList.remove('error-label');
-            label.textContent = `${type}`; 
+            label.textContent = `${type}`;
         } else if (type === 'doctor') {
             setSelectedDoctor(item.firstName + " " + item.lastName + " " + item.middleName);
             setSelectedDoctorId(id);
             setFilterDoctor('');
-            
+
             const filteredOffice = offices.filter(office => office.id === item.office.id);
             setFiltredOffice(filteredOffice);
             // setSelectedOfficeId(filteredOffice[0].id);
@@ -144,7 +148,7 @@ const MakeAnAppointmentModal = ({ onClose, onOpenSignIn }) => {
 
             input.classList.remove('error-input-border');
             label.classList.remove('error-label');
-            label.textContent = `${type}`; 
+            label.textContent = `${type}`;
         } else if (type === 'service') {
             setSelectedService(item.serviceName);
             setSelectedServiceId(id);
@@ -152,7 +156,7 @@ const MakeAnAppointmentModal = ({ onClose, onOpenSignIn }) => {
 
             input.classList.remove('error-input-border');
             label.classList.remove('error-label');
-            label.textContent = `${type}`; 
+            label.textContent = `${type}`;
         }
     };
 
@@ -202,11 +206,11 @@ const MakeAnAppointmentModal = ({ onClose, onOpenSignIn }) => {
             label.classList.add('error-label');
             label.textContent = `Invalid ${type} name`;
         }
-    
+
         if (inputValue && !itemsArray.includes(inputValue)) {
             input.classList.add('error-input-border');
             label.classList.add('error-label');
-            label.textContent = `Invalid ${type} name`; 
+            label.textContent = `Invalid ${type} name`;
         }
     };
 
@@ -234,19 +238,18 @@ const MakeAnAppointmentModal = ({ onClose, onOpenSignIn }) => {
     };
 
     const isFormValid = () => {
-        return selectedSpecializationId !== '' && selectedDoctorId !== '' && selectedServiceId !== '' && 
-        selectedOfficeId !== '' && selectedDate !== '' && selectedTimeSlot !== '';
+        return selectedSpecializationId !== '' && selectedDoctorId !== '' && selectedServiceId !== '' &&
+            selectedOfficeId !== '' && selectedDate !== '' && selectedTimeSlot !== '';
     };
 
-    async function toggleCreateAppointmentAsync () {
-        // if(!isUserLoggedIn) {
-        //     alert('Sign in to make an appointment');
-        //     onOpenSignIn();
-        // }
+    async function toggleCreateAppointmentAsync() {
+        if (!isUserLoggedIn) {
+            alert('Sign in to make an appointment');
+            onOpenSignIn();
+        }
         const appointmentModelRequest = new AppointmentModelRequest("08a0707f-8fc7-48e8-93e5-6caf2d3ac9ce", selectedDoctorId, selectedServiceId, selectedDate, selectedTimeSlot, false);
         await CreateAppointmentFetchAsync(appointmentModelRequest);
     };
-
 
     return (
         <div className="modal-overlay">
@@ -362,7 +365,7 @@ const MakeAnAppointmentModal = ({ onClose, onOpenSignIn }) => {
                     </div>
                 </div>
                 <div className="btn-group">
-                    <button 
+                    <button
                         className={`appointment-btn ${!isFormValid() ? 'disabled-appointment-btn' : ''}`}
                         onClick={toggleCreateAppointmentAsync}
                         disabled={!isFormValid()}

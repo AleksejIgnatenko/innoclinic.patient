@@ -5,6 +5,7 @@ import CustomMap from '../components/CustomMap';
 import "./../styles/Doctors.css";
 import GetAllOfficesFetchAsync from '../api/Offices.API/GetAllOfficesFetchAsync';
 import GetAllDoctorsAtWorkFetchAsync from '../api/Profiles.API/GetAllDoctorsAtWorkFetchAsync';
+import Loader from '../components/Loader'; 
 
 function Doctors() {
     const [searchTerm, setSearchTerm] = useState('');
@@ -14,14 +15,23 @@ function Doctors() {
     const [showMap, setShowMap] = useState(false);
     const [doctors, setDoctors] = useState([]);
     const [offices, setOffices] = useState([]);
+    const [isLoading, setIsLoading] = useState(true); 
 
     useEffect(() => {
         const fetchData = async () => {
-            const fetchedDoctors = await GetAllDoctorsAtWorkFetchAsync();
-            setDoctors(fetchedDoctors);
+            try {
+                toggleLoader(true);
 
-            const fetchedOffices = await GetAllOfficesFetchAsync();
-            setOffices(fetchedOffices);
+                const fetchedDoctors = await GetAllDoctorsAtWorkFetchAsync();
+                setDoctors(fetchedDoctors);
+
+                const fetchedOffices = await GetAllOfficesFetchAsync();
+                setOffices(fetchedOffices);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            } finally {
+                toggleLoader(false);
+            }
         };
 
         fetchData();
@@ -44,39 +54,48 @@ function Doctors() {
         );
     });
 
+    const toggleLoader = (status) => {
+        setIsLoading(status);
+    };
+
     return (
         <div>
-            <NavBar
-                pageTitle={"Doctors"}
-                setSearchTerm={setSearchTerm}
-                doctors={doctors}
-                onFilterDoctors={handleFilterDoctors}
-                selectedAddresses={selectedAddresses}
-                setSelectedAddresses={setSelectedAddresses}
-                selectedSpecialization={selectedSpecialization}
-                setSelectedSpecialization={setSelectedSpecialization}
-                onShowMap={handleShowMap}
-            />
-            <div className="doctors-container">
-                {doctors.length < 1 ? (
-                    <p className='no-doctors-message'>There are no doctors available.</p>
-                ) : (
-                    displayedDoctors.length > 0 ? (
-                        displayedDoctors.map((doctor) => (
-                            <DoctorCard
-                                key={doctor.id}
-                                name={`${doctor.firstName || ''} ${doctor.lastName || ''} ${doctor.middleName || ''}`}
-                                specialization={doctor.specialization?.specializationName || "Not found"}
-                                experience={doctor.careerStartYear ? new Date().getFullYear() - new Date(doctor.careerStartYear).getFullYear() + 1 : "N/A"}
-                                officeAddress={doctor.office?.address || "Not found"}
-                            />
-                        ))
-                    ) : (
-                        <p className='no-doctors-message'>Nothing could be found.</p>
-                    )
-                )}
-            </div>
-            {showMap && <CustomMap offices={offices} onClose={handleShowMap} />}
+            {isLoading && <Loader />}
+            {!isLoading && (
+                <>
+                    <NavBar
+                        pageTitle={"Doctors"}
+                        setSearchTerm={setSearchTerm}
+                        doctors={doctors}
+                        onFilterDoctors={handleFilterDoctors}
+                        selectedAddresses={selectedAddresses}
+                        setSelectedAddresses={setSelectedAddresses}
+                        selectedSpecialization={selectedSpecialization}
+                        setSelectedSpecialization={setSelectedSpecialization}
+                        onShowMap={handleShowMap}
+                    />
+                    <div className="doctors-container">
+                        {doctors.length < 1 ? (
+                            <p className='no-doctors-message'>There are no doctors available.</p>
+                        ) : (
+                            displayedDoctors.length > 0 ? (
+                                displayedDoctors.map((doctor) => (
+                                    <DoctorCard
+                                        key={doctor.id}
+                                        name={`${doctor.firstName || ''} ${doctor.lastName || ''} ${doctor.middleName || ''}`}
+                                        specialization={doctor.specialization?.specializationName || "Not found"}
+                                        experience={doctor.careerStartYear ? new Date().getFullYear() - new Date(doctor.careerStartYear).getFullYear() + 1 : "N/A"}
+                                        officeAddress={doctor.office?.address || "Not found"}
+                                    />
+                                ))
+                            ) : (
+                                <p className='no-doctors-message'>Nothing could be found.</p>
+                            )
+                        )}
+                    </div>
+                    {showMap && <CustomMap offices={offices} onClose={handleShowMap} />}
+                </>
+            )}
         </div>
     );
 }

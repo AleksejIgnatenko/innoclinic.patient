@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './../styles/SignUp.css';
+import PatientModelRequest from '../models/PatientModelRequest';
+import CreatePatientFetchAsync from '../api/Profiles.API/CreatePatientFetchAsync';
+import FoundPatientModal from '../components/FoundPatientModal';
 
 const CreateProfile = () => {
     const [currentStage, setCurrentStage] = useState(0);
@@ -13,11 +16,16 @@ const CreateProfile = () => {
     const [middleName, setMiddleName] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [dateOfBirth, setDateOfBirth] = useState('');
+    const [patient, setPatient] = useState(null);
 
     const [isFirstNameValid, setIsFirstNameValid] = useState(false);
     const [isLastNameValid, setIsLastNameValid] = useState(false);
     const [isPhoneNumberValid, setIsPhoneNumberValid] = useState(false);
     const [isDateOfBirthValid, setisDateOfBirthValid] = useState(false);
+
+    const [foundPatients, setFoundPatients] = useState([]);
+
+    const [foundPatientModalShow, setFoundPatientModalShow] = useState(false);
 
     const [file, setFile] = useState(null);
     const [preview, setPreview] = useState(null);
@@ -29,6 +37,10 @@ const CreateProfile = () => {
     const imagesTypes = ["jpeg", "png", "svg", "gif"];
     const dropZoonRef = useRef(null);
     const fileInputRef = useRef(null);
+
+    const toggleFoundPatientModal = () => {
+        setFoundPatientModalShow(!foundPatientModalShow);
+    };
 
     const handleDragOver = (e) => {
         e.preventDefault();
@@ -120,10 +132,6 @@ const CreateProfile = () => {
         return isFirstNameValid && isLastNameValid;
     };
 
-    async function toggleCreateProfileAsync() {
-
-    }
-
     const updateForm = (progression) => {
         const newStage = currentStage + progression;
         if (newStage >= 0 && newStage < stages.length) {
@@ -144,7 +152,9 @@ const CreateProfile = () => {
     };
 
     const handlePhoneNumberChange = (event) => {
-        setPhoneNumber(event.target.value);
+        if (event.target.value.startsWith('+') || event.target.value === '') {
+            setPhoneNumber(event.target.value);
+        }
     };
 
     const handleDateOfBirthChange = (event) => {
@@ -272,209 +282,228 @@ const CreateProfile = () => {
             setisDateOfBirthValid(true);
         }
     }
-    
+
+    const handlePhoneNumberClick = (event) => {
+        event.target.value = '+';
+    };
+
+    async function handlePatientAsync() {
+        const patientModel = new PatientModelRequest(firstName, lastName, middleName, phoneNumber, true, dateOfBirth);
+        const result = await CreatePatientFetchAsync(patientModel);
+        
+        if (result.status === 409) {
+            setFoundPatients(result.foundPatients);
+            setPatient(patientModel);
+            toggleFoundPatientModal(true);
+        }
+    }
 
     return (
-        <div className="signUp-container">
-            <section className="sign-up-section">
-                <h2>Main Title 2</h2>
-                <ul className="sign-up-stage-progress">
-                    {stages.map((stage, index) => (
-                        <li key={index} className={index === currentStage ? "sign-up-active-stage" : ""}>
-                            {stage.title}
-                        </li>
-                    ))}
-                </ul>
-                <div className="sign-up-form-wrapper">
-                    <div className="sign-up-form" style={{ transform: `translateX(-${currentStage * 100}%)` }}>
-                        <div className='stage'>
-                            <div className="upload-area__header">
-                                <h1 className="upload-area__title">Upload your image</h1>
-                                <div className="upload-area__paragraph">
-                                    File should be an image
-                                    <strong className="upload-area__tooltip">
-                                        Like
-                                        <span className="upload-area__tooltip-data">{imagesTypes.join(', .')}</span>
-                                    </strong>
-                                    <div className="drop-zoon__paragraph">or drop your file here or Click to browse</div>
+        <>
+            {foundPatientModalShow && <FoundPatientModal onClose={toggleFoundPatientModal} foundPatients={foundPatients} patient={patient}/>}
+            <div className="signUp-container">
+                <section className="sign-up-section">
+                    <h2>Main Title 2</h2>
+                    <ul className="sign-up-stage-progress">
+                        {stages.map((stage, index) => (
+                            <li key={index} className={index === currentStage ? "sign-up-active-stage" : ""}>
+                                {stage.title}
+                            </li>
+                        ))}
+                    </ul>
+                    <div className="sign-up-form-wrapper">
+                        <div className="sign-up-form" style={{ transform: `translateX(-${currentStage * 100}%)` }}>
+                            <div className='stage'>
+                                <div className="upload-area__header">
+                                    <h1 className="upload-area__title">Upload your image</h1>
+                                    <div className="upload-area__paragraph">
+                                        File should be an image
+                                        <strong className="upload-area__tooltip">
+                                            Like
+                                            <span className="upload-area__tooltip-data">{imagesTypes.join(', .')}</span>
+                                        </strong>
+                                        <div className="drop-zoon__paragraph">or drop your file here or Click to browse</div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div
-                                id="uploadArea"
-                                className="upload-area"
-                                style={{ backgroundImage: preview ? `url(${preview})` : 'none' }}
-                                ref={dropZoonRef}
-                                onDragOver={handleDragOver}
-                                onDragLeave={handleDragLeave}
-                                onDrop={handleDrop}
-                                onClick={handleButtonClick}>
-                                <span className="drop-zoon__icon">
-                                    <i className="bx bxs-file-image"></i>
-                                </span>
-                                <span id="loadingText" className={`drop-zoon__loading-text ${loading ? 'show' : ''}`}>Please Wait</span>
-                                <input
-                                    ref={fileInputRef}
-                                    type="file"
-                                    id="fileInput"
-                                    className="drop-zoon__file-input"
-                                    accept="image/*"
-                                    onChange={handleFileChange}
-                                />
-                                <div id="fileDetails" className="upload-area__file-details file-details">
-                                    <h3 className="file-details__title">Uploaded File</h3>
-                                    <div id="uploadedFile" className="uploaded-file">
-                                        <div className="uploaded-file__icon-container">
-                                            <i className="bx bxs-file-blank uploaded-file__icon"></i>
-                                            <span className="uploaded-file__icon-text">{fileType}</span>
-                                        </div>
-                                        <div id="uploadedFileInfo" className="uploaded-file__info">
-                                            <span className="uploaded-file__name">{fileName}</span>
-                                            <span className="uploaded-file__counter">{progress}%</span>
+                                <div
+                                    id="uploadArea"
+                                    className="upload-area"
+                                    style={{ backgroundImage: preview ? `url(${preview})` : 'none' }}
+                                    ref={dropZoonRef}
+                                    onDragOver={handleDragOver}
+                                    onDragLeave={handleDragLeave}
+                                    onDrop={handleDrop}
+                                    onClick={handleButtonClick}>
+                                    <span className="drop-zoon__icon">
+                                        <i className="bx bxs-file-image"></i>
+                                    </span>
+                                    <span id="loadingText" className={`drop-zoon__loading-text ${loading ? 'show' : ''}`}>Please Wait</span>
+                                    <input
+                                        ref={fileInputRef}
+                                        type="file"
+                                        id="fileInput"
+                                        className="drop-zoon__file-input"
+                                        accept="image/*"
+                                        onChange={handleFileChange}
+                                    />
+                                    <div id="fileDetails" className="upload-area__file-details file-details">
+                                        <h3 className="file-details__title">Uploaded File</h3>
+                                        <div id="uploadedFile" className="uploaded-file">
+                                            <div className="uploaded-file__icon-container">
+                                                <i className="bx bxs-file-blank uploaded-file__icon"></i>
+                                                <span className="uploaded-file__icon-text">{fileType}</span>
+                                            </div>
+                                            <div id="uploadedFileInfo" className="uploaded-file__info">
+                                                <span className="uploaded-file__name">{fileName}</span>
+                                                <span className="uploaded-file__counter">{progress}%</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div className='stage'>
-                        <div className="sign-up-inputs">
-                                <div className="sign-up-input-wrapper">
-                                    <input
-                                        value={firstName}
-                                        onChange={handleFirstNameChange}
-                                        onBlur={handleFirstNameBlur}
-                                        onInput={handleFirstNameInput}
-                                        type="text"
-                                        name=""
-                                        id="sign-up-firstName-input"
-                                        class="input default-input-border"
-                                        placeholder=" "
-                                        required />
-                                    <label class="input-label" id="sign-up-firstName-label">First name</label>
+                            <div className='stage'>
+                                <div className="sign-up-inputs">
+                                    <div className="sign-up-input-wrapper">
+                                        <input
+                                            value={firstName}
+                                            onChange={handleFirstNameChange}
+                                            onBlur={handleFirstNameBlur}
+                                            onInput={handleFirstNameInput}
+                                            type="text"
+                                            name=""
+                                            id="sign-up-firstName-input"
+                                            class="input default-input-border"
+                                            placeholder=" "
+                                            required />
+                                        <label class="input-label" id="sign-up-firstName-label">First name</label>
+                                    </div>
+                                    <div className="sign-up-input-wrapper">
+                                        <input
+                                            value={lastName}
+                                            onChange={handleLastNameChange}
+                                            onBlur={handleLastNameBlur}
+                                            onInput={handleLastNameInput}
+                                            type="text"
+                                            name=""
+                                            id="sign-up-lastName-input"
+                                            class="input default-input-border"
+                                            placeholder=" "
+                                            required />
+                                        <label class="input-label" id="sign-up-lastName-label">Last name</label>
+                                    </div>
+                                    <div className="sign-up-input-wrapper">
+                                        <input
+                                            value={middleName}
+                                            onChange={handleMiddleNameChange}
+                                            // onBlur={handleMiddleNamelBlur}
+                                            // onInput={handleMiddleNamelInput}
+                                            type="text"
+                                            name=""
+                                            id="sign-up-middleName-input"
+                                            class="input default-input-border"
+                                            placeholder=" "
+                                            required />
+                                        <label class="input-label" id="sign-up-middleName-label">Middle name</label>
+                                    </div>
+                                    <div className="sign-up-input-wrapper">
+                                        <input
+                                            value={phoneNumber}
+                                            onChange={handlePhoneNumberChange}
+                                            onBlur={handlePhoneNumberBlur}
+                                            onInput={handlePhoneNumberInput}
+                                            onClick={handlePhoneNumberClick}
+                                            type="tel"
+                                            name=""
+                                            id="sign-up-phone-number-input"
+                                            class="input default-input-border"
+                                            placeholder=" "
+                                            required />
+                                        <label class="input-label" id="sign-up-phone-number-label">Phone Number (+375(xx)xxx-xx-xx)</label>
+                                    </div>
+                                    <div className="sign-up-input-wrapper">
+                                        <input
+                                            value={dateOfBirth}
+                                            onChange={handleDateOfBirthChange}
+                                            onBlur={handleDateOfBirthBlur}
+                                            onInput={handleDateOfBirthInput}
+                                            className="input default-input-border"
+                                            placeholder=" "
+                                            type="date"
+                                            required
+                                        />
+                                        <label className="input-label" id="sign-up-date-label">Date of birth</label>
+                                    </div>
                                 </div>
-                                <div className="sign-up-input-wrapper">
-                                    <input
-                                        value={lastName}
-                                        onChange={handleLastNameChange}
-                                        onBlur={handleLastNameBlur}
-                                        onInput={handleLastNameInput}
-                                        type="text"
-                                        name=""
-                                        id="sign-up-lastName-input"
-                                        class="input default-input-border"
-                                        placeholder=" "
-                                        required />
-                                    <label class="input-label" id="sign-up-lastName-label">Last name</label>
+                            </div>
+                            <div className='stage'>
+                                <div className="upload-area__header">
+                                    <h1 className="upload-area__title">Upload your image</h1>
+                                    <div className="upload-area__paragraph">
+                                        File should be an image
+                                        <strong className="upload-area__tooltip">
+                                            Like
+                                            <span className="upload-area__tooltip-data">{imagesTypes.join(', .')}</span>
+                                        </strong>
+                                        <div className="drop-zoon__paragraph">or drop your file here or Click to browse</div>
+                                    </div>
                                 </div>
-                                <div className="sign-up-input-wrapper">
+                                <div
+                                    id="uploadArea"
+                                    className="upload-area"
+                                    style={{ backgroundImage: preview ? `url(${preview})` : 'none' }}
+                                    ref={dropZoonRef}
+                                    onDragOver={handleDragOver}
+                                    onDragLeave={handleDragLeave}
+                                    onDrop={handleDrop}
+                                    onClick={handleButtonClick}>
+                                    <span className="drop-zoon__icon">
+                                        <i className="bx bxs-file-image"></i>
+                                    </span>
+                                    <span id="loadingText" className={`drop-zoon__loading-text ${loading ? 'show' : ''}`}>Please Wait</span>
                                     <input
-                                        value={middleName}
-                                        onChange={handleMiddleNameChange}
-                                        // onBlur={handleMiddleNamelBlur}
-                                        // onInput={handleMiddleNamelInput}
-                                        type="text"
-                                        name=""
-                                        id="sign-up-middleName-input"
-                                        class="input default-input-border"
-                                        placeholder=" "
-                                        required />
-                                    <label class="input-label" id="sign-up-middleName-label">Middle name</label>
-                                </div>
-                                <div className="sign-up-input-wrapper">
-                                    <input
-                                        value={phoneNumber}
-                                        onChange={handlePhoneNumberChange}
-                                        onBlur={handlePhoneNumberBlur}
-                                        onInput={handlePhoneNumberInput}
-                                        type="tel"
-                                        name=""
-                                        id="sign-up-phone-number-input"
-                                        class="input default-input-border"
-                                        placeholder=" "
-                                        required />
-                                    <label class="input-label" id="sign-up-phone-number-label">Phone Number (+375(xx)xxx-xx-xx)</label>
-                                </div>
-                                <div className="sign-up-input-wrapper">
-                                    <input
-                                        value={dateOfBirth}
-                                        onChange={handleDateOfBirthChange}
-                                        onBlur={handleDateOfBirthBlur}
-                                        onInput={handleDateOfBirthInput}
-                                        className="input default-input-border"
-                                        placeholder=" "
-                                        type="date"
-                                        required
+                                        ref={fileInputRef}
+                                        type="file"
+                                        id="fileInput"
+                                        className="drop-zoon__file-input"
+                                        accept="image/*"
+                                        onChange={handleFileChange}
                                     />
-                                    <label className="input-label" id="sign-up-date-label">Date of birth</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div className='stage'>
-                            <div className="upload-area__header">
-                                <h1 className="upload-area__title">Upload your image</h1>
-                                <div className="upload-area__paragraph">
-                                    File should be an image
-                                    <strong className="upload-area__tooltip">
-                                        Like
-                                        <span className="upload-area__tooltip-data">{imagesTypes.join(', .')}</span>
-                                    </strong>
-                                    <div className="drop-zoon__paragraph">or drop your file here or Click to browse</div>
-                                </div>
-                            </div>
-                            <div
-                                id="uploadArea"
-                                className="upload-area"
-                                style={{ backgroundImage: preview ? `url(${preview})` : 'none' }}
-                                ref={dropZoonRef}
-                                onDragOver={handleDragOver}
-                                onDragLeave={handleDragLeave}
-                                onDrop={handleDrop}
-                                onClick={handleButtonClick}>
-                                <span className="drop-zoon__icon">
-                                    <i className="bx bxs-file-image"></i>
-                                </span>
-                                <span id="loadingText" className={`drop-zoon__loading-text ${loading ? 'show' : ''}`}>Please Wait</span>
-                                <input
-                                    ref={fileInputRef}
-                                    type="file"
-                                    id="fileInput"
-                                    className="drop-zoon__file-input"
-                                    accept="image/*"
-                                    onChange={handleFileChange}
-                                />
-                                <div id="fileDetails" className="upload-area__file-details file-details">
-                                    <h3 className="file-details__title">Uploaded File</h3>
-                                    <div id="uploadedFile" className="uploaded-file">
-                                        <div className="uploaded-file__icon-container">
-                                            <i className="bx bxs-file-blank uploaded-file__icon"></i>
-                                            <span className="uploaded-file__icon-text">{fileType}</span>
-                                        </div>
-                                        <div id="uploadedFileInfo" className="uploaded-file__info">
-                                            <span className="uploaded-file__name">{fileName}</span>
-                                            <span className="uploaded-file__counter">{progress}%</span>
+                                    <div id="fileDetails" className="upload-area__file-details file-details">
+                                        <h3 className="file-details__title">Uploaded File</h3>
+                                        <div id="uploadedFile" className="uploaded-file">
+                                            <div className="uploaded-file__icon-container">
+                                                <i className="bx bxs-file-blank uploaded-file__icon"></i>
+                                                <span className="uploaded-file__icon-text">{fileType}</span>
+                                            </div>
+                                            <div id="uploadedFileInfo" className="uploaded-file__info">
+                                                <span className="uploaded-file__name">{fileName}</span>
+                                                <span className="uploaded-file__counter">{progress}%</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div className="navigation-container">
-                    <button
-                        className={`secondary-btn ${currentStage === 0 ? "hidden" : ""}`}
-                        onClick={() => updateForm(-1)}
-                    >
-                        Prev
-                    </button>
-                    {currentStage !== 1 ?
-                        <button className="primary-btn" onClick={() => updateForm(1)}>Next Step</button> :
+                    <div className="navigation-container">
                         <button
-                            className={`primary-btn ${!isFormValid() ? 'disabled-primary-btn' : ''}`}
-                            disabled={!isFormValid()}>Confirm &#x27F6;
+                            className={`secondary-btn ${currentStage === 0 ? "hidden" : ""}`}
+                            onClick={() => updateForm(-1)}
+                        >
+                            Prev
                         </button>
-                    }
-                </div>
-            </section>
-        </div>
+                        {currentStage !== 1 ?
+                            <button className="primary-btn" onClick={() => updateForm(1)}>Next Step</button> :
+                            <button
+                                className={`primary-btn ${!isFormValid() ? 'disabled-primary-btn' : ''}`}
+                                onClick={handlePatientAsync}
+                                disabled={!isFormValid()}>Confirm &#x27F6;
+                            </button>
+                        }
+                    </div>
+                </section>
+            </div>
+        </>
     );
 };
 

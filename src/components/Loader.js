@@ -3,8 +3,13 @@ import './../styles/Loader.css';
 
 const Loader = () => {
     return (
-        <div class="loading-container">
-            <div class="loading-progress"></div>
+        <div class="data-loader">
+            <div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
         </div>
     );
 };

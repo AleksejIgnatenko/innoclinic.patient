@@ -28,7 +28,7 @@ async function SignInFetchAsync(signInModel) {
         }
     } catch (error) {
         console.error('Error during registration:', error);
-        alert('An error occurred during registration');
+        alert('An error occurred during sign in');
     }
 }
 

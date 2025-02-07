@@ -192,13 +192,15 @@ const Sidebar = () => {
                     {isUserLoggedIn ? (
                         <li>
                             <div className="profile-details">
-                                <div className="profile-content">
-                                    <img alt="profileImg" />
-                                </div>
-                                <div className="name-job">
-                                    <div className="profile_name">Farid Vatani</div>
-                                    <div className="job">Software Engineer</div>
-                                </div>
+                                <Link to="/profile?tab=PersonalInformation">
+                                    <div className="profile-content">
+                                        <img alt="profileImg" />
+                                    </div>
+                                    <div className="name-job">
+                                        <div className="profile_name">Farid Vatani</div>
+                                        <div className="job">Software Engineer</div>
+                                    </div>
+                                </Link>
                                 <i className='bx bx-log-out' onClick={handleLogOut}></i>
                             </div>
                         </li>

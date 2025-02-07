@@ -1,13 +1,13 @@
-import { getCookie } from "../../services/getCookie";
 import { ProfilesAPI } from "../api";
+import Cookies from 'js-cookie';
 import RefreshTokenFetchAsync from "../Authorization.API/RefreshTokenFetchAsync";
 
 async function CreatePatientFetchAsync(patientModel) {
     try {
-        let jwtToken = getCookie('accessToken');
+        let jwtToken = Cookies.get('accessToken');
         if (!jwtToken) {
             await RefreshTokenFetchAsync(); 
-            jwtToken = getCookie('accessToken');
+            jwtToken = Cookies.get('accessToken');
         }
 
         const response = await fetch(`${ProfilesAPI}/Patient`, {

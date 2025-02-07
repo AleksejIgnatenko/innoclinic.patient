@@ -1,8 +1,8 @@
 import { ProfilesAPI } from "../api";
-import Cookies from 'js-cookie';
 import RefreshTokenFetchAsync from "../Authorization.API/RefreshTokenFetchAsync";
+import Cookies from 'js-cookie';
 
-async function AccountConnectionWithThePatientFetchAsync(id) {
+async function GetPatientByAccountIdFromTokenFetchAsync(id) {
     try {
         let jwtToken = Cookies.get('accessToken');
         if (!jwtToken) {
@@ -10,26 +10,27 @@ async function AccountConnectionWithThePatientFetchAsync(id) {
             jwtToken = Cookies.get('accessToken');
         }
 
-        const response = await fetch(`${ProfilesAPI}/Patient/account-connection-with-the-patient/${id}`, {
-            method: 'PUT',
+        const response = await fetch(`${ProfilesAPI}/Patient/patient-by-account-id-from-token`, {
+            method: 'GET',
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${jwtToken}`,
             },
-            body: JSON.stringify({ patientId: id })
         });
 
+        const data = await response.json();
+        
         if (response.ok) {
-            console.log("Successfully connected account with patient.");
+            return data;
         } else {
-            const errorData = await response.json();
-            console.error("Error connecting account with patient:", errorData);
+            console.error("Error connecting account with patient:", data);
+            return null;
         }
     } catch (error) {
         console.error('Error in account connection with the patient:', error);
         alert('An error occurred while connecting the account with the patient');
-        return { status: 500, error: 'Internal Server Error' };
+        return null;
     }
 }
 
-export default AccountConnectionWithThePatientFetchAsync;
+export default GetPatientByAccountIdFromTokenFetchAsync;

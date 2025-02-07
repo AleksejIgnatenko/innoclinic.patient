@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import './../styles/SignUp.css';
+import './../styles/CreateProfile.css';
 import PatientModelRequest from '../models/PatientModelRequest';
 import CreatePatientFetchAsync from '../api/Profiles.API/CreatePatientFetchAsync';
 import FoundPatientModal from '../components/FoundPatientModal';
@@ -163,7 +163,7 @@ const CreateProfile = () => {
 
     const handleFirstNameBlur = (event) => {
         const input = event.target;
-        const label = document.getElementById('sign-up-firstName-label');
+        const label = document.getElementById('createPatientProfile-firstName-label');
 
         if (input.value === '') {
             input.classList.add('error-input-border');
@@ -180,7 +180,7 @@ const CreateProfile = () => {
 
     const handleLastNameBlur = (event) => {
         const input = event.target;
-        const label = document.getElementById('sign-up-lastName-label');
+        const label = document.getElementById('createPatientProfile-lastName-label');
 
         if (input.value === '') {
             input.classList.add('error-input-border');
@@ -197,7 +197,7 @@ const CreateProfile = () => {
 
     const handlePhoneNumberBlur = (event) => {
         const input = event.target;
-        const label = document.getElementById('sign-up-phone-number-label');
+        const label = document.getElementById('createPatientProfile-phone-number-label');
         const phoneNumberPattern = /^\+375\(\d{2}\)\d{3}-\d{2}-\d{2}$/;
 
         if (!phoneNumberPattern.test(input.value)) {
@@ -215,7 +215,7 @@ const CreateProfile = () => {
 
     const handleDateOfBirthBlur = (event) => {
         const input = event.target;
-        const label = document.getElementById('sign-up-date-label');
+        const label = document.getElementById('createPatientProfile-date-label');
 
         if (!input.value) {
             input.classList.add('error-input-border');
@@ -232,7 +232,7 @@ const CreateProfile = () => {
 
     const handleFirstNameInput = (event) => {
         const input = event.target;
-        const label = document.getElementById('sign-up-firstName-label');
+        const label = document.getElementById('createPatientProfile-firstName-label');
 
         if (input.value === '') {
             setIsFirstNameValid(false);
@@ -246,7 +246,7 @@ const CreateProfile = () => {
 
     const handleLastNameInput = (event) => {
         const input = event.target;
-        const label = document.getElementById('sign-up-lastName-label');
+        const label = document.getElementById('createPatientProfile-lastName-label');
 
         if (input.value === '') {
             setIsLastNameValid(false);
@@ -271,7 +271,7 @@ const CreateProfile = () => {
 
     const handleDateOfBirthInput = (event) => {
         const input = event.target;
-        const label = document.getElementById('sign-up-date-label');
+        const label = document.getElementById('createPatientProfile-date-label');
 
         if (!input.value) {
             setisDateOfBirthValid(false);
@@ -301,18 +301,18 @@ const CreateProfile = () => {
     return (
         <>
             {foundPatientModalShow && <FoundPatientModal onClose={toggleFoundPatientModal} foundPatients={foundPatients} patient={patient}/>}
-            <div className="signUp-container">
-                <section className="sign-up-section">
+            <div className="createPatientProfile-container">
+                <section className="createPatientProfile-section">
                     <h2>Main Title 2</h2>
-                    <ul className="sign-up-stage-progress">
+                    <ul className="createPatientProfile-stage-progress">
                         {stages.map((stage, index) => (
-                            <li key={index} className={index === currentStage ? "sign-up-active-stage" : ""}>
+                            <li key={index} className={index === currentStage ? "createPatientProfile-active-stage" : ""}>
                                 {stage.title}
                             </li>
                         ))}
                     </ul>
-                    <div className="sign-up-form-wrapper">
-                        <div className="sign-up-form" style={{ transform: `translateX(-${currentStage * 100}%)` }}>
+                    <div className="createPatientProfile-form-wrapper">
+                        <div className="createPatientProfile-form" style={{ transform: `translateX(-${currentStage * 100}%)` }}>
                             <div className='stage'>
                                 <div className="upload-area__header">
                                     <h1 className="upload-area__title">Upload your image</h1>
@@ -362,8 +362,8 @@ const CreateProfile = () => {
                                 </div>
                             </div>
                             <div className='stage'>
-                                <div className="sign-up-inputs">
-                                    <div className="sign-up-input-wrapper">
+                                <div className="createPatientProfile-inputs">
+                                    <div className="createPatientProfile-input-wrapper">
                                         <input
                                             value={firstName}
                                             onChange={handleFirstNameChange}
@@ -371,13 +371,13 @@ const CreateProfile = () => {
                                             onInput={handleFirstNameInput}
                                             type="text"
                                             name=""
-                                            id="sign-up-firstName-input"
+                                            id="createPatientProfile-firstName-input"
                                             class="input default-input-border"
                                             placeholder=" "
                                             required />
-                                        <label class="input-label" id="sign-up-firstName-label">First name</label>
+                                        <label class="input-label" id="createPatientProfile-firstName-label">First name</label>
                                     </div>
-                                    <div className="sign-up-input-wrapper">
+                                    <div className="createPatientProfile-input-wrapper">
                                         <input
                                             value={lastName}
                                             onChange={handleLastNameChange}
@@ -385,13 +385,13 @@ const CreateProfile = () => {
                                             onInput={handleLastNameInput}
                                             type="text"
                                             name=""
-                                            id="sign-up-lastName-input"
+                                            id="createPatientProfile-lastName-input"
                                             class="input default-input-border"
                                             placeholder=" "
                                             required />
-                                        <label class="input-label" id="sign-up-lastName-label">Last name</label>
+                                        <label class="input-label" id="createPatientProfile-lastName-label">Last name</label>
                                     </div>
-                                    <div className="sign-up-input-wrapper">
+                                    <div className="createPatientProfile-input-wrapper">
                                         <input
                                             value={middleName}
                                             onChange={handleMiddleNameChange}
@@ -399,13 +399,13 @@ const CreateProfile = () => {
                                             // onInput={handleMiddleNamelInput}
                                             type="text"
                                             name=""
-                                            id="sign-up-middleName-input"
+                                            id="createPatientProfile-middleName-input"
                                             class="input default-input-border"
                                             placeholder=" "
                                             required />
-                                        <label class="input-label" id="sign-up-middleName-label">Middle name</label>
+                                        <label class="input-label" id="createPatientProfile-middleName-label">Middle name</label>
                                     </div>
-                                    <div className="sign-up-input-wrapper">
+                                    <div className="createPatientProfile-input-wrapper">
                                         <input
                                             value={phoneNumber}
                                             onChange={handlePhoneNumberChange}
@@ -414,13 +414,13 @@ const CreateProfile = () => {
                                             onClick={handlePhoneNumberClick}
                                             type="tel"
                                             name=""
-                                            id="sign-up-phone-number-input"
+                                            id="createPatientProfile-phone-number-input"
                                             class="input default-input-border"
                                             placeholder=" "
                                             required />
-                                        <label class="input-label" id="sign-up-phone-number-label">Phone Number (+375(xx)xxx-xx-xx)</label>
+                                        <label class="input-label" id="createPatientProfile-phone-number-label">Phone Number (+375(xx)xxx-xx-xx)</label>
                                     </div>
-                                    <div className="sign-up-input-wrapper">
+                                    <div className="createPatientProfile-input-wrapper">
                                         <input
                                             value={dateOfBirth}
                                             onChange={handleDateOfBirthChange}
@@ -431,7 +431,7 @@ const CreateProfile = () => {
                                             type="date"
                                             required
                                         />
-                                        <label className="input-label" id="sign-up-date-label">Date of birth</label>
+                                        <label className="input-label" id="createPatientProfile-date-label">Date of birth</label>
                                     </div>
                                 </div>
                             </div>

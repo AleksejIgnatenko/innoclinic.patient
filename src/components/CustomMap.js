@@ -24,16 +24,20 @@ const CustomMap = ({ offices, onClose }) => {
     return (
         <div className="modal-overlay">
             <button className="close-button" onClick={onClose}>X</button>
-            <Map center={defaultCenter} zoom={10} width="80%" height="400px" provider={osmProvider}>
-                {offices.map((office, index) => {
-                    const anchor = [parseFloat(office.longitude), parseFloat(office.latitude)];
-                    return (
-                        <Marker key={index} anchor={anchor} payload={index}>
-                            <div style={{ color: 'red', fontSize: '24px' }}>🏥</div>
-                        </Marker>
-                    );
-                })}
-            </Map>
+            {offices.length < 1 ? (
+                <div>No offices available</div>
+            ) : (
+                <Map center={defaultCenter} zoom={10} width="80%" height="400px" provider={osmProvider}>
+                    {offices.map((office, index) => {
+                        const anchor = [parseFloat(office.longitude), parseFloat(office.latitude)];
+                        return (
+                            <Marker key={index} anchor={anchor} payload={index}>
+                                <div style={{ color: 'red', fontSize: '24px' }}>🏥</div>
+                            </Marker>
+                        );
+                    })}
+                </Map>
+            )}
         </div>
     );
 };

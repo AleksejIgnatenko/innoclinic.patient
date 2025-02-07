@@ -17,6 +17,8 @@ async function GetAllActiveOfficesFetchAsync() {
     } catch (error) {
         console.error('Error in getting all doctors:', error);
         alert('An error occurred while receiving all the doctors');
+
+        return [];
     }
 }
 

@@ -1,14 +1,26 @@
 import { AppointmentAPI } from "../api";
+import Cookies from 'js-cookie';
+import RefreshTokenFetchAsync from "../Authorization.API/RefreshTokenFetchAsync";
 
 async function CreateAppointmentFetchAsync(appointmentModelRequest) {
     try {
+        let jwtToken = Cookies.get('accessToken');
+        if (!jwtToken) {
+            await RefreshTokenFetchAsync(); 
+            jwtToken = Cookies.get('accessToken');
+        }
+
         const response = await fetch(`${AppointmentAPI}/Appointment`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                "Authorization": `Bearer ${jwtToken}`,
             },
             body: JSON.stringify(appointmentModelRequest)
         });
+
+        console.log(appointmentModelRequest);
+        console.log(response);
 
         if (response.ok) {
            console.log("ok");

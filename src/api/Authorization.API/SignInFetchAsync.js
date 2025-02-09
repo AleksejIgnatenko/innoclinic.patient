@@ -20,14 +20,27 @@ async function SignInFetchAsync(signInModel) {
                 const accessTokenExpiry = 15 / (24 * 60);
                 const refreshTokenExpiry = 180;
 
-                Cookies.set('accessToken', accessToken, { sameSite: 'strict', expires: accessTokenExpiry });
-                Cookies.set('refreshToken', refreshToken, { secure: true, sameSite: 'strict', expires: refreshTokenExpiry });
+                Cookies.set('accessToken', accessToken, { 
+                    sameSite: 'strict', 
+                    expires: accessTokenExpiry, 
+                    path: '/',
+                    domain: 'localhost'
+                });
+                Cookies.set('refreshToken', refreshToken, { 
+                    secure: true, 
+                    sameSite: 'strict', 
+                    expires: refreshTokenExpiry, 
+                    path: '/', 
+                    domain: 'localhost'
+                });
+
+                window.location.href = "/";
             } else {
                 alert('You entered the wrong password.');
             }
         }
     } catch (error) {
-        console.error('Error during registration:', error);
+        console.error('Error during sign in:', error);
         alert('An error occurred during sign in');
     }
 }

@@ -19,9 +19,6 @@ async function CreateAppointmentFetchAsync(appointmentModelRequest) {
             body: JSON.stringify(appointmentModelRequest)
         });
 
-        console.log(appointmentModelRequest);
-        console.log(response);
-
         if (response.ok) {
            console.log("ok");
         } else {

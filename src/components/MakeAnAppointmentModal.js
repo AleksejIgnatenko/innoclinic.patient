@@ -264,135 +264,133 @@ const MakeAnAppointmentModal = ({ onClose, onOpenSignIn }) => {
 
     return (
         <div className="modal-overlay">
-            <div className="appointment-container">
-                <div className="appointment-top-content">
-                    <button className="close-button" onClick={onClose}>X</button>
-                    <h2>Make an Appointment</h2>
+            {isLoading ? (
+                <div className="loader-container">
+                    <Loader />
                 </div>
-                {isLoading ? (
-                    <div className="loader-container">
-                        <Loader />
+            ) : (
+                <div className="appointment-container">
+                    <div className="appointment-top-content">
+                        <button className="close-button" onClick={onClose}>X</button>
+                        <h2>Make an Appointment</h2>
                     </div>
-                ) : (
-                    <>
-                        <div className="appointment-inputs">
-                            <div className="appointment-input-wrapper">
-                                <input
-                                    id="appointment-specialization-input"
-                                    value={selectedSpecialization}
-                                    onChange={handleSpecializationChange}
-                                    onBlur={handleSpecializationBlur}
-                                    className="input default-input-border"
-                                    placeholder=" "
-                                    required
-                                />
-                                <label className="input-label" id="appointment-specialization-label">Specialization</label>
-                                {filterSpecialization && (
-                                    <div className="filtred-list">
-                                        {filteredSpecializations.map(specialization => (
-                                            <div key={specialization.id} onClick={() => handleListClick(specialization.id, specialization, 'specialization')}>
-                                                {specialization.specializationName}
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                            <div className="appointment-input-wrapper">
-                                <input
-                                    id="appointment-doctor-input"
-                                    value={selectedDoctor}
-                                    onChange={handleDoctorChange}
-                                    onBlur={handleDoctorBlur}
-                                    className="input default-input-border"
-                                    placeholder=" "
-                                    required
-                                />
-                                <label className="input-label" id="appointment-doctor-label">Doctor</label>
-                                {filterDoctor && (
-                                    <div className="filtred-list">
-                                        {filteredDoctors.map(doctor => (
-                                            <div key={doctor.id} onClick={() => handleListClick(doctor.id, doctor, 'doctor')}>
-                                                {doctor.firstName + " " + doctor.lastName + " " + doctor.middleName}
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                            <div className="appointment-input-wrapper">
-                                <input
-                                    id="appointment-service-input"
-                                    value={selectedService}
-                                    onChange={handleServicesChange}
-                                    onBlur={handleServicesBlur}
-                                    className="input default-input-border"
-                                    placeholder=" "
-                                    required
-                                />
-                                <label className="input-label" id="appointment-service-label">Service</label>
-                                {filterServices && (
-                                    <div className="filtred-list">
-                                        {filteredServices.map(service => (
-                                            <div key={service.id} onClick={() => handleListClick(service.id, service, 'service')}>
-                                                {service.serviceName}
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                            <div className="appointment-input-wrapper">
-                                <select
-                                    value={selectedOfficeId}
-                                    onChange={handleOfficesChange}
-                                    onBlur={handleOfficeBlur}
-                                    className="input default-input-border custom-select"
-                                    required
-                                >
-                                    <option value="" disabled>Select an office</option>
-                                    {filtredOffice.map(office => (
-                                        <option key={office.id} value={office.id}>{office.address}</option>
+                    <div className="appointment-inputs">
+                        <div className="appointment-input-wrapper">
+                            <input
+                                id="appointment-specialization-input"
+                                value={selectedSpecialization}
+                                onChange={handleSpecializationChange}
+                                onBlur={handleSpecializationBlur}
+                                className="input default-input-border"
+                                placeholder=" "
+                                required
+                            />
+                            <label className="input-label" id="appointment-specialization-label">Specialization</label>
+                            {filterSpecialization && (
+                                <div className="filtred-list">
+                                    {filteredSpecializations.map(specialization => (
+                                        <div key={specialization.id} onClick={() => handleListClick(specialization.id, specialization, 'specialization')}>
+                                            {specialization.specializationName}
+                                        </div>
                                     ))}
-                                </select>
-                                <label className="input-label label-active" id="appointment-office-label">Office</label>
-                            </div>
-                            <div className="appointment-input-wrapper">
-                                <input
-                                    value={selectedDate}
-                                    onChange={handleDateChange}
-                                    onBlur={handleDateBlur}
-                                    className="input default-input-border"
-                                    placeholder=" "
-                                    type="date"
-                                    required
-                                />
-                                <label className="input-label" id="appointment-date-label">Date</label>
-                            </div>
-                            <div className="appointment-input-wrapper">
-                                <select
-                                    value={selectedTimeSlot}
-                                    onChange={handleTimeSlotChange}
-                                    className="input default-input-border custom-select"
-                                    required
-                                >
-                                    <option value="" disabled>Select a time slot</option>
-                                    {timeSlots.map(slot => (
-                                        <option key={slot} value={slot}>{slot}</option>
-                                    ))}
-                                </select>
-                                <label className="input-label label-active" id="appointment-time-slot-label">Time Slot</label>
-                            </div>
+                                </div>
+                            )}
                         </div>
-                        <div className="btn-group">
-                            <button
-                                className={`appointment-btn ${!isFormValid() ? 'disabled-appointment-btn' : ''}`}
-                                onClick={toggleCreateAppointmentAsync}
-                                disabled={!isFormValid()}
+                        <div className="appointment-input-wrapper">
+                            <input
+                                id="appointment-doctor-input"
+                                value={selectedDoctor}
+                                onChange={handleDoctorChange}
+                                onBlur={handleDoctorBlur}
+                                className="input default-input-border"
+                                placeholder=" "
+                                required
+                            />
+                            <label className="input-label" id="appointment-doctor-label">Doctor</label>
+                            {filterDoctor && (
+                                <div className="filtred-list">
+                                    {filteredDoctors.map(doctor => (
+                                        <div key={doctor.id} onClick={() => handleListClick(doctor.id, doctor, 'doctor')}>
+                                            {doctor.firstName + " " + doctor.lastName + " " + doctor.middleName}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                        <div className="appointment-input-wrapper">
+                            <input
+                                id="appointment-service-input"
+                                value={selectedService}
+                                onChange={handleServicesChange}
+                                onBlur={handleServicesBlur}
+                                className="input default-input-border"
+                                placeholder=" "
+                                required
+                            />
+                            <label className="input-label" id="appointment-service-label">Service</label>
+                            {filterServices && (
+                                <div className="filtred-list">
+                                    {filteredServices.map(service => (
+                                        <div key={service.id} onClick={() => handleListClick(service.id, service, 'service')}>
+                                            {service.serviceName}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                        <div className="appointment-input-wrapper">
+                            <select
+                                value={selectedOfficeId}
+                                onChange={handleOfficesChange}
+                                onBlur={handleOfficeBlur}
+                                className="input default-input-border custom-select"
+                                required
                             >
-                                Confirm
-                            </button>
+                                <option value="" disabled>Select an office</option>
+                                {filtredOffice.map(office => (
+                                    <option key={office.id} value={office.id}>{office.address}</option>
+                                ))}
+                            </select>
+                            <label className="input-label label-active" id="appointment-office-label">Office</label>
                         </div>
-                    </>
-                )}
-            </div>
+                        <div className="appointment-input-wrapper">
+                            <input
+                                value={selectedDate}
+                                onChange={handleDateChange}
+                                onBlur={handleDateBlur}
+                                className="input default-input-border"
+                                placeholder=" "
+                                type="date"
+                                required
+                            />
+                            <label className="input-label" id="appointment-date-label">Date</label>
+                        </div>
+                        <div className="appointment-input-wrapper">
+                            <select
+                                value={selectedTimeSlot}
+                                onChange={handleTimeSlotChange}
+                                className="input default-input-border custom-select"
+                                required
+                            >
+                                <option value="" disabled>Select a time slot</option>
+                                {timeSlots.map(slot => (
+                                    <option key={slot} value={slot}>{slot}</option>
+                                ))}
+                            </select>
+                            <label className="input-label label-active" id="appointment-time-slot-label">Time Slot</label>
+                        </div>
+                    </div>
+                    <div className="btn-group">
+                        <button
+                            className={`appointment-btn ${!isFormValid() ? 'disabled-appointment-btn' : ''}`}
+                            onClick={toggleCreateAppointmentAsync}
+                            disabled={!isFormValid()}
+                        >
+                            Confirm
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import DoctorCard from "../components/DoctorCard";
-import NavBar from "../components/NavBar";
 import CustomMap from '../components/CustomMap';
 import "./../styles/Doctors.css";
 import GetAllOfficesFetchAsync from '../api/Offices.API/GetAllOfficesFetchAsync';
 import GetAllDoctorsAtWorkFetchAsync from '../api/Profiles.API/GetAllDoctorsAtWorkFetchAsync';
 import Loader from '../components/Loader'; 
+import Toolbar from '../components/Toolbar';
 
 function Doctors() {
     const [searchTerm, setSearchTerm] = useState('');
@@ -63,11 +63,11 @@ function Doctors() {
             {isLoading && <Loader />}
             {!isLoading && (
                 <>
-                    <NavBar
+                    <Toolbar
                         pageTitle={"Doctors"}
                         setSearchTerm={setSearchTerm}
-                        doctors={doctors}
-                        onFilterDoctors={handleFilterDoctors}
+                        items={doctors}
+                        onFilterItems={handleFilterDoctors}
                         selectedAddresses={selectedAddresses}
                         setSelectedAddresses={setSelectedAddresses}
                         selectedSpecialization={selectedSpecialization}

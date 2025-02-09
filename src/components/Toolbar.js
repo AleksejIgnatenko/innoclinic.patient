@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import './../styles/NavBar.css';
+import './../styles/Toolbar.css';
 import FilterDoctorModal from './FilterDoctorModal';
 
-const NavBar = ({ 
+const Toolbar = ({ 
     pageTitle, 
     setSearchTerm, 
-    doctors, 
-    onFilterDoctors, 
+    items, 
+    onFilterItems, 
     selectedAddresses, 
     setSelectedAddresses, 
     selectedSpecialization, 
@@ -29,15 +29,15 @@ const NavBar = ({
             {showFilterDoctorModal && (
                 <FilterDoctorModal
                     onClose={toggleFilterDoctorModal}
-                    doctors={doctors}
-                    onFilterDoctors={onFilterDoctors}
+                    doctors={items}
+                    onFilterDoctors={onFilterItems}
                     selectedAddresses={selectedAddresses}
                     setSelectedAddresses={setSelectedAddresses}
                     selectedSpecialization={selectedSpecialization}
                     setSelectedSpecialization={setSelectedSpecialization}
                 />
             )}
-            <div className='nav-bar'>
+            <div className='toolbar'>
                 <h2 className='pageName'>{pageTitle}</h2>
                 <div className="filter-search-container">
                     <div className="search-bar">
@@ -56,4 +56,4 @@ const NavBar = ({
     );
 };
 
-export default NavBar;
+export default Toolbar;

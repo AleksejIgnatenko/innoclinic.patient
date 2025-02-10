@@ -6,7 +6,7 @@ const ProfileCard = ({ profile }) => {
         <div className="profile-wrapper">
             <div className="profile-card active">
                 <div className="profile-card-header">
-                    <img src="https://i.imgur.com/jMtQiws.jpg" alt="" />
+                    <img src="https://th.bing.com/th/id/OIP.audMX4ZGbvT2_GJTx2c4GgAAAA?rs=1&pid=ImgDetMain" alt="" />
                 </div>
                 <div className="profile-card-content">
                     <h3>First name: {profile && profile.firstName ? profile.firstName : ''}</h3>

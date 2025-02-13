@@ -2,6 +2,12 @@ import { ServicesAPI } from "../api";
 
 async function GetAllMedicalServiceFetchAsync() {
     try {
+        let jwtToken = Cookies.get('accessToken');
+        if (!jwtToken) {
+            await RefreshTokenFetchAsync(); 
+            jwtToken = Cookies.get('accessToken');
+        }
+        
         const response = await fetch(`${ServicesAPI}/MedicalService`, {
             method: 'GET',
             headers: {

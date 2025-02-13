@@ -2,6 +2,12 @@ import { ServicesAPI } from "../api";
 
 async function GetAllSpecializationFetchAsync() {
     try {
+        let jwtToken = Cookies.get('accessToken');
+        if (!jwtToken) {
+            await RefreshTokenFetchAsync(); 
+            jwtToken = Cookies.get('accessToken');
+        }
+        
         const response = await fetch(`${ServicesAPI}/Specialization`, {
             method: 'GET',
             headers: {

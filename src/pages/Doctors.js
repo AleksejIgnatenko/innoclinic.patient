@@ -6,6 +6,7 @@ import GetAllOfficesFetchAsync from '../api/Offices.API/GetAllOfficesFetchAsync'
 import GetAllDoctorsAtWorkFetchAsync from '../api/Profiles.API/GetAllDoctorsAtWorkFetchAsync';
 import Loader from '../components/Loader'; 
 import Toolbar from '../components/Toolbar';
+import { Link } from 'react-router-dom';
 
 function Doctors() {
     const [searchTerm, setSearchTerm] = useState('');
@@ -79,15 +80,17 @@ function Doctors() {
                             <p className='no-doctors-message'>There are no doctors available.</p>
                         ) : (
                             displayedDoctors.length > 0 ? (
-                                displayedDoctors.map((doctor) => (
-                                    <DoctorCard
-                                        key={doctor.id}
-                                        name={`${doctor.firstName || ''} ${doctor.lastName || ''} ${doctor.middleName || ''}`}
-                                        specialization={doctor.specialization?.specializationName || "Not found"}
-                                        experience={doctor.careerStartYear ? new Date().getFullYear() - new Date(doctor.careerStartYear).getFullYear() + 1 : "N/A"}
-                                        officeAddress={doctor.office?.address || "Not found"}
-                                    />
-                                ))
+                                    displayedDoctors.map((doctor) => (
+                                        <Link to={`/doctorProfile/${doctor.id}`}>
+                                            <DoctorCard
+                                                key={doctor.id}
+                                                name={`${doctor.firstName || ''} ${doctor.lastName || ''} ${doctor.middleName || ''}`}
+                                                specialization={doctor.specialization?.specializationName || "Not found"}
+                                                experience={doctor.careerStartYear ? new Date().getFullYear() - new Date(doctor.careerStartYear).getFullYear() + 1 : "N/A"}
+                                                officeAddress={doctor.office?.address || "Not found"}
+                                            />
+                                        </Link>
+                                    ))
                             ) : (
                                 <p className='no-doctors-message'>Nothing could be found.</p>
                             )

@@ -1,7 +1,15 @@
 import { ProfilesAPI } from "../api";
+import Cookies from 'js-cookie';
+import RefreshTokenFetchAsync from "../Authorization.API/RefreshTokenFetchAsync";
 
 async function GetAllDoctorsAtWorkFetchAsync() {
     try {
+        let jwtToken = Cookies.get('accessToken');
+        if (!jwtToken) {
+            await RefreshTokenFetchAsync(); 
+            jwtToken = Cookies.get('accessToken');
+        }
+        
         const response = await fetch(`${ProfilesAPI}/Doctors/at-work`, {
             method: 'GET',
             headers: {

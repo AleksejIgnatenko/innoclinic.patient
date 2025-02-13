@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import "./../styles/Profile.css";
+import "./../styles/PatientProfile.css";
 import Loader from '../components/Loader';
 import GetPatientByAccountIdFromTokenFetchAsync from '../api/Profiles.API/GetPatientByAccountIdFromTokenFetchAsync';
-import ProfileCard from '../components/ProfileCard';
+import PatientProfileCard from '../components/PatientProfileCard';
 
-function Profile() {
+function PatientProfile() {
     const location = useLocation();
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('PersonalInformation');
@@ -70,7 +70,7 @@ function Profile() {
                 <div className='tabs-container'>
                     <div data-content className={activeTab === 'PersonalInformation' ? 'is-active' : ''} id="personalInformation">
                         <div className='container-profile-card'>
-                           <ProfileCard profile={profile} />
+                           <PatientProfileCard profile={profile} />
                         </div>
                     </div>
 
@@ -83,4 +83,4 @@ function Profile() {
     );
 }
 
-export default Profile;
+export default PatientProfile;

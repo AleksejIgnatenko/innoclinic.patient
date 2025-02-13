@@ -9,7 +9,7 @@ import AppointmentModelRequest from '../models/AppointmentModelRequest';
 import CreateAppointmentFetchAsync from '../api/Appointments.API/CreateAppointmentFetchAsync';
 import Loader from './Loader';
 
-const MakeAnAppointmentModal = ({ onClose, onOpenSignIn }) => {
+const MakeAnAppointmentModal = ({ onClose, onOpenSignIn, doctorId }) => {
     const [selectedSpecialization, setSelectedSpecialization] = useState('');
     const [selectedSpecializationId, setSelectedSpecializationId] = useState('');
 
@@ -56,6 +56,10 @@ const MakeAnAppointmentModal = ({ onClose, onOpenSignIn }) => {
 
                 const fetchedDoctors = await GetAllDoctorsAtWorkFetchAsync();
                 setDoctors(fetchedDoctors);
+                if(doctorId !== '') {
+                    const findDoctor = fetchedDoctors.find(doctor => doctor.id === doctorId); 
+                    handleListClick(findDoctor.id, findDoctor, 'doctor')
+                }
 
                 const fetchedServices = await GetAllActiveMedicalServicesFetchAsync();
                 setServices(fetchedServices);

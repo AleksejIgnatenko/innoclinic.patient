@@ -1,7 +1,15 @@
 import { OfficesAPI } from "../api";
+import Cookies from 'js-cookie';
+import RefreshTokenFetchAsync from "../Authorization.API/RefreshTokenFetchAsync";
 
 async function GetAllActiveOfficesFetchAsync() {
     try {
+        let jwtToken = Cookies.get('accessToken');
+        if (!jwtToken) {
+            await RefreshTokenFetchAsync(); 
+            jwtToken = Cookies.get('accessToken');
+        }
+        
         const response = await fetch(`${OfficesAPI}/Office/all-active-offices`, {
             method: 'GET',
             headers: {

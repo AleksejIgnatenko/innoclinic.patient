@@ -2,6 +2,12 @@ import { ProfilesAPI } from "../api";
 
 async function GetAllDoctorsFetchAsync() {
     try {
+        let jwtToken = Cookies.get('accessToken');
+        if (!jwtToken) {
+            await RefreshTokenFetchAsync(); 
+            jwtToken = Cookies.get('accessToken');
+        }
+        
         const response = await fetch(`${ProfilesAPI}/Doctors`, {
             method: 'GET',
             headers: {

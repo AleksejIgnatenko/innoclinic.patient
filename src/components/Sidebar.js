@@ -7,11 +7,16 @@ import SignUpModal from './SignUpModal';
 import { Link } from 'react-router-dom';
 import MakeAnAppointmentModal from './MakeAnAppointmentModal';
 
-const Sidebar = () => {
+const Sidebar = ({
+    isUserLoggedIn,
+    showSignInModal,
+    toggleSignInModal,
+    showSignUpModal,
+    toggleSignUpModal,
+    showMakeAnAppointmentModel,
+    toggleMakeAnAppointmentModel,
+}) => {
     const [showSidebar, setShowSidebar] = useState(false);
-    const [showSignInModal, setSignInModal] = useState(false);
-    const [showSignUpModal, setShowSignUpModal] = useState(false);
-    const [showMakeAnAppointmentModel, setShowMakeAnAppointmentModel] = useState(false);
     const [currentTheme, setCurrentTheme] = useState(() => {
         return localStorage.getItem('theme') || 'light';
     });
@@ -33,33 +38,6 @@ const Sidebar = () => {
         }
     };
 
-    const toggleSignInModal = () => {
-        setSignInModal(!showSignInModal);
-        setShowSignUpModal(false);
-        setShowMakeAnAppointmentModel(false);
-    };
-
-    const toggleSignUpModal = () => {
-        setShowSignUpModal(!showSignUpModal);
-        setSignInModal(false);
-        setShowMakeAnAppointmentModel(false);
-    };
-
-    const toggleMakeAnAppointmentModel = () => {
-        if (showMakeAnAppointmentModel) {
-            const result = window.confirm('Do you really want to exit? Your appointment will not be saved.');
-            if (result) {
-                setShowMakeAnAppointmentModel(!showMakeAnAppointmentModel);
-                setShowSignUpModal(false);
-                setSignInModal(false);
-            }
-        } else {
-            setShowMakeAnAppointmentModel(!showMakeAnAppointmentModel);
-        }
-    };
-
-    let isUserLoggedIn = Cookies.get('refreshToken') !== undefined;
-
     const handleLogOut = () => {
         Cookies.remove('accessToken');
         Cookies.remove('refreshToken');
@@ -74,7 +52,7 @@ const Sidebar = () => {
         <>
             {showSignInModal && <SignInModal onClose={toggleSignInModal} onOpenSignUp={toggleSignUpModal} />}
             {showSignUpModal && <SignUpModal onClose={toggleSignUpModal} onOpenSignIn={toggleSignInModal}/>}
-            {showMakeAnAppointmentModel && <MakeAnAppointmentModal onClose={toggleMakeAnAppointmentModel} onOpenSignIn={toggleSignInModal}/>}
+            {showMakeAnAppointmentModel && <MakeAnAppointmentModal onClose={toggleMakeAnAppointmentModel} onOpenSignIn={toggleSignInModal} doctorId={''}/>}
             <div className={`sidebar ${showSidebar ? '' : 'close'}`}>
                 <div className="logo-details">
                     <i className='bx bx-menu' onClick={toggleSidebar}></i>

@@ -1,7 +1,7 @@
 import React from 'react';
-import './../styles/ProfileCard.css';
+import './../styles/PatientProfileCard.css';
 
-const ProfileCard = ({ profile }) => {
+const PatientProfileCard = ({ profile }) => {
     return (
         <div className="profile-wrapper">
             <div className="profile-card active">
@@ -20,4 +20,4 @@ const ProfileCard = ({ profile }) => {
     );
 };
 
-export default ProfileCard;
+export default PatientProfileCard;

@@ -170,7 +170,7 @@ const Sidebar = ({
                     {isUserLoggedIn ? (
                         <li>
                             <div className="profile-details">
-                                <Link to="/profile?tab=PersonalInformation">
+                                <Link to="/patientProfile?tab=PersonalInformation">
                                     <div className="profile-content">
                                         <img src="https://th.bing.com/th/id/OIP.audMX4ZGbvT2_GJTx2c4GgAAAA?rs=1&pid=ImgDetMain" alt="profileImg" />
                                     </div>

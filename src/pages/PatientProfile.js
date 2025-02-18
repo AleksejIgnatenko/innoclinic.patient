@@ -41,7 +41,7 @@ function PatientProfile() {
 
     const handleTabClick = (tab) => {
         setActiveTab(tab);
-        navigate(`/profile?tab=${tab}`);
+        navigate(`/patientProfile?tab=${tab}`);
     };
 
     const toggleLoader = (status) => {

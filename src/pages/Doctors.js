@@ -23,10 +23,52 @@ function Doctors() {
             try {
                 toggleLoader(true);
 
-                const fetchedDoctors = await GetAllDoctorsAtWorkFetchAsync();
+                //const fetchedDoctors = await GetAllDoctorsAtWorkFetchAsync();
+                const fetchedDoctors = 
+                [
+                  {
+                    "id": "f5f43c43-7e46-4443-9d84-3d636136d169",
+                    "firstName": "Петров1",
+                    "lastName": "Петр",
+                    "middleName": "Петрович",
+                    "cabinetNumber": 1,
+                    "dateOfBirth": "2025-01-01",
+                    "account": {
+                      "id": "52356f12-dfd7-4bc5-8836-1b13298cd141",
+                      "email": "lehaignatenko989@gmail.com",
+                      "password": "$2a$10$5nDXFgpS.RmIxlvpZY9/Guqlh/S.CJ5cWILe6w7tPMBtGz0cLCtOy",
+                      "phoneNumber": "",
+                      "role": 1
+                    },
+                    "specialization": {
+                      "id": "d7e98a7d-cfee-4d3c-9512-24c986a3cabd",
+                      "specializationName": "test",
+                      "isActive": true
+                    },
+                    "office": {
+                      "id": "a408a09a-1836-458e-8c17-2d1802d6ac10",
+                      "address": "гомель пушкина 3",
+                      "registryPhoneNumber": "string",
+                      "isActive": true
+                    },
+                    "careerStartYear": "2025-01-01",
+                    "status": "At work"
+                  }
+                ]
                 setDoctors(fetchedDoctors);
 
-                const fetchedOffices = await GetAllOfficesFetchAsync();
+                //const fetchedOffices = await GetAllOfficesFetchAsync();
+                const fetchedOffices = [
+                    {
+                      "id": "a408a09a-1836-458e-8c17-2d1802d6ac10",
+                      "address": "гомель пушкина 3",
+                      "longitude": "52.43014",
+                      "latitude": "31.013527",
+                      "photoId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                      "registryPhoneNumber": "string",
+                      "isActive": true
+                    }
+                  ]
                 setOffices(fetchedOffices);
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -77,7 +119,7 @@ function Doctors() {
                     />
                     <div className="doctors-container">
                         {doctors.length < 1 ? (
-                            <p className='no-doctors-message'>There are no doctors available.</p>
+                            <p className='no-doctors-message'>There are no doctors matching this filtration.</p>
                         ) : (
                             displayedDoctors.length > 0 ? (
                                     displayedDoctors.map((doctor) => (
@@ -96,7 +138,7 @@ function Doctors() {
                             )
                         )}
                     </div>
-                    {showMap && <CustomMap offices={offices} onClose={handleShowMap} />}
+                    {showMap && <CustomMap offices={offices} onClose={handleShowMap} setSelectedAddresses={setSelectedAddresses}/>}
                 </>
             )}
         </div>

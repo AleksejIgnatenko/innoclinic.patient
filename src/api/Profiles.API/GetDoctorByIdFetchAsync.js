@@ -2,7 +2,7 @@ import { ProfilesAPI } from "../api";
 import Cookies from 'js-cookie';
 import RefreshTokenFetchAsync from "../Authorization.API/RefreshTokenFetchAsync";
 
-async function GetDoctorByIdFetchFetchAsync(doctorId) {
+async function GetDoctorByIdFetchAsync(doctorId) {
     try {
         let jwtToken = Cookies.get('accessToken');
         if (!jwtToken) {
@@ -29,4 +29,4 @@ async function GetDoctorByIdFetchFetchAsync(doctorId) {
     }
 }
 
-export default GetDoctorByIdFetchFetchAsync;
+export default GetDoctorByIdFetchAsync;

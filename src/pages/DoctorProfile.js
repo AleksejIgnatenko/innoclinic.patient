@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import "./../styles/DoctorProfile.css";
 import Loader from '../components/Loader';
 import DoctorProfileCard from '../components/DoctorProfileCard';
-import GetDoctorByIdFetchFetchAsync from '../api/Profiles.API/GetDoctorByIdFetchFetchAsync';
+import GetDoctorByIdFetchAsync from '../api/Profiles.API/GetDoctorByIdFetchAsync';
 import GetServicesBySpecializationIdFethcAsync from '../api/Services.API/GetServicesByCategoryIdFethcAsync';
 
 function DoctorProfile({
@@ -23,7 +23,7 @@ function DoctorProfile({
         const fetchData = async () => {
             try {
                 toggleLoader(true);
-                const fetchDoctor = await GetDoctorByIdFetchFetchAsync(doctorId);
+                const fetchDoctor = await GetDoctorByIdFetchAsync(doctorId);
                 setDoctor(fetchDoctor);
 
                 const fetchServices = await GetServicesBySpecializationIdFethcAsync(fetchDoctor.specialization.id);

@@ -13,7 +13,7 @@ const DoctorCard = ({photo, name, specialization, experience, officeAddress}) =>
                 <span class="doctor-experience">Experience: {experience}</span>
                 <span class="doctor-office">Office address: {officeAddress}</span>
             </div>
-            <div class="action-button">
+            <div class="doctor-action-button">
                 <button>viewing the recording</button>
             </div>
         </div>

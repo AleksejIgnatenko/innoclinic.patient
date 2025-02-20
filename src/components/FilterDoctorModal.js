@@ -1,10 +1,18 @@
 import React, { useEffect } from 'react';
 import './../styles/FilterDoctorModal.css';
 
-const FilterDoctorModal = ({ onClose, doctors, onFilterDoctors,
-    selectedAddresses, setSelectedAddresses, 
-    selectedSpecialization, setSelectedSpecialization }) => {
-    
+const FilterDoctorModal = ({
+    onClose,
+    doctors,
+    offices,
+    specializations,
+    onFilterDoctors,
+    selectedAddresses,
+    setSelectedAddresses,
+    selectedSpecialization,
+    setSelectedSpecialization
+}) => {
+
     useEffect(() => {
         const handleKeyPress = (event) => {
             if (event.key === 'Escape') {
@@ -38,8 +46,8 @@ const FilterDoctorModal = ({ onClose, doctors, onFilterDoctors,
     };
 
     const resetFilters = () => {
-        setSelectedAddresses([]); 
-        setSelectedSpecialization(""); 
+        setSelectedAddresses([]);
+        setSelectedSpecialization("");
         onFilterDoctors(doctors);
         onClose();
     };
@@ -53,16 +61,16 @@ const FilterDoctorModal = ({ onClose, doctors, onFilterDoctors,
                     <div className="filter-input-group">
                         <label>Office address</label>
                         <div className="filter-checkbox-group">
-                            {[...new Set(doctors.map(d => d.office.address))].map(address => (
-                                <label key={address}>
+                            {offices.map(office => (
+                                <label key={office.id}>
                                     <input
                                         type="checkbox"
                                         name="office-address"
-                                        value={address}
-                                        checked={selectedAddresses.includes(address)}
+                                        value={office.address}
+                                        checked={selectedAddresses.includes(office.address)}
                                         onChange={handleAddressChange}
                                     />
-                                    <span>{address}</span>
+                                    <span>{office.address}</span>
                                 </label>
                             ))}
                         </div>
@@ -71,8 +79,8 @@ const FilterDoctorModal = ({ onClose, doctors, onFilterDoctors,
                         <label>Specialization</label>
                         <select value={selectedSpecialization} onChange={handleSpecializationChange}>
                             <option value="">All</option>
-                            {[...new Set(doctors.map(d => d.specialization.specializationName))].map(spec => (
-                                <option key={spec} value={spec}>{spec}</option>
+                            {specializations.map(spec => (
+                                <option key={spec.id} value={spec.specializationName}>{spec.specializationName}</option>
                             ))}
                         </select>
                     </div>

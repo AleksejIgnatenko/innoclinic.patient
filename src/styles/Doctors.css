@@ -3,10 +3,10 @@
     flex-wrap: wrap;
     gap: 10px;
     justify-content: space-around;
-    margin: 120px 0 0 0; 
+    margin: 10px 0 0 0; 
 }
 
-.no-doctors-message {
-    /* margin-left: 45%; */
+/* .no-doctors-message {
+    margin-left: 45%;
     margin-top: 15%;
-}
+} */

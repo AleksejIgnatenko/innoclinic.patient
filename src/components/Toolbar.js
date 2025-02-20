@@ -5,8 +5,10 @@ import FilterDoctorModal from './FilterDoctorModal';
 const Toolbar = ({ 
     pageTitle, 
     setSearchTerm, 
-    items, 
-    onFilterItems, 
+    doctors, 
+    offices,
+    specializations,
+    onFilterDoctors, 
     selectedAddresses, 
     setSelectedAddresses, 
     selectedSpecialization, 
@@ -29,8 +31,10 @@ const Toolbar = ({
             {showFilterDoctorModal && (
                 <FilterDoctorModal
                     onClose={toggleFilterDoctorModal}
-                    doctors={items}
-                    onFilterDoctors={onFilterItems}
+                    doctors={doctors}
+                    offices={offices}
+                    specializations={specializations}
+                    onFilterDoctors={onFilterDoctors}
                     selectedAddresses={selectedAddresses}
                     setSelectedAddresses={setSelectedAddresses}
                     selectedSpecialization={selectedSpecialization}

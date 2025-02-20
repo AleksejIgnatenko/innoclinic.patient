@@ -1,15 +1,7 @@
 import { OfficesAPI } from "../api";
-import Cookies from 'js-cookie';
-import RefreshTokenFetchAsync from "../Authorization.API/RefreshTokenFetchAsync";
 
 async function GetAllOfficesFetchAsync() {
     try {
-        let jwtToken = Cookies.get('accessToken');
-        if (!jwtToken) {
-            await RefreshTokenFetchAsync(); 
-            jwtToken = Cookies.get('accessToken');
-        }
-        
         const response = await fetch(`${OfficesAPI}/Office`, {
             method: 'GET',
             headers: {
@@ -23,10 +15,8 @@ async function GetAllOfficesFetchAsync() {
            return data;
         }
     } catch (error) {
-        console.error('Error in getting all doctors:', error);
-        alert('An error occurred while receiving all the doctors');
-
-        return [];
+        console.error('Error in fetching all offices:', error);
+        alert('An error occurred while fetching the offices. Please check your connection and try again.');
     }
 }
 

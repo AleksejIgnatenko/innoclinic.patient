@@ -8,6 +8,7 @@ import GetAllActiveMedicalServicesFetchAsync from '../api/Services.API/GetAllAct
 import AppointmentModelRequest from '../models/AppointmentModelRequest';
 import CreateAppointmentFetchAsync from '../api/Appointments.API/CreateAppointmentFetchAsync';
 import Loader from './Loader';
+import GetAllAvailableTimeSlotsFetchAsync from '../api/Appointments.API/GetAllAvailableTimeSlotsFetchAsync';
 
 const MakeAnAppointmentModal = ({ onClose, onOpenSignIn, doctorId }) => {
     const [selectedSpecialization, setSelectedSpecialization] = useState('');
@@ -35,14 +36,9 @@ const MakeAnAppointmentModal = ({ onClose, onOpenSignIn, doctorId }) => {
     const [doctors, setDoctors] = useState([]);
     const [services, setServices] = useState([]);
     const [offices, setOffices] = useState([]);
+    const [timeSlots, setTimeSlots] = useState([]);
 
     const [isLoading, setIsLoading] = useState(true);
-
-    // specializations = ['Specialization 1', 'Specialization 2', 'Specialization 3', 'Specialization 4', 'Specialization 5'];
-    // doctors = ['Doctor 1', 'Doctor 2', 'Doctor 3', 'Doctor 4', 'Doctor 5'];
-    // services = ['Service 1', 'Service 2', 'Service 3', 'Service 4', 'Service 5'];
-    // offices = ['Office 1', 'Office 2', 'Office 3'];
-    const timeSlots = ['09:00 AM', '10:00 AM', '11:00 AM', '01:00 PM', '02:00 PM'];
 
     let isUserLoggedIn = Cookies.get('refreshToken') !== undefined;
 
@@ -75,6 +71,29 @@ const MakeAnAppointmentModal = ({ onClose, onOpenSignIn, doctorId }) => {
 
         fetchData();
     }, []);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const findService = services.find(s => s.id === selectedServiceId);
+
+                if (findService) {
+                    const timeSlotSize = findService.serviceCategory.timeSlotSize;
+                    const fetchedTimeSlots = await GetAllAvailableTimeSlotsFetchAsync(selectedDate, timeSlotSize);
+                    setTimeSlots(fetchedTimeSlots);
+                } else {
+                    console.error('Service not found');
+                }
+
+            } catch (error) {
+                console.error('Error fetching services:', error);
+            }
+        };
+
+        if (selectedServiceId && selectedDate) {
+            fetchData();
+        }
+    }, [selectedServiceId, selectedDate]);
 
     useEffect(() => {
         const handleKeyPress = (event) => {
@@ -262,8 +281,11 @@ const MakeAnAppointmentModal = ({ onClose, onOpenSignIn, doctorId }) => {
             alert('Sign in to make an appointment');
             onOpenSignIn();
         }
+        
         const appointmentModelRequest = new AppointmentModelRequest(selectedDoctorId, selectedServiceId, selectedDate, selectedTimeSlot, false);
         await CreateAppointmentFetchAsync(appointmentModelRequest);
+
+        setTimeSlots(prevSlots => prevSlots.filter(slot => slot !== selectedTimeSlot));
     };
 
     return (

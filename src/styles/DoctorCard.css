@@ -75,13 +75,13 @@
   font-weight: 400;
 }
 
-.action-button {
+.doctor-action-button {
   display: flex;
   align-items: center;
   margin-top: 30px;
 }
 
-.action-button button {
+.doctor-action-button button {
   background-color: var(--accent);
   padding: 12px;
   margin: 0 18px;

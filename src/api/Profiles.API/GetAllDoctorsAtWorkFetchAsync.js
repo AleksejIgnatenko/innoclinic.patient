@@ -10,7 +10,7 @@ async function GetAllDoctorsAtWorkFetchAsync() {
             jwtToken = Cookies.get('accessToken');
         }
         
-        const response = await fetch(`${ProfilesAPI}/Doctors/at-work`, {
+        const response = await fetch(`${ProfilesAPI}/Doctor/at-work`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -23,7 +23,7 @@ async function GetAllDoctorsAtWorkFetchAsync() {
         }
     } catch (error) {
         console.error('Error in getting all doctors at work:', error);
-        alert('An error occurred while receiving all the doctors at work');
+        //alert('An error occurred while receiving all the doctors at work');
         return [];
     }
 }

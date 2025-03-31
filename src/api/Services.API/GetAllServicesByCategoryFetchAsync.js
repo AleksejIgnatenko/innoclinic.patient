@@ -21,10 +21,13 @@ async function GetAllServicesByCategoryFetchAsync() {
 
         if (response.ok) {
            return data;
+        } else {
+            return [];
         }
     } catch (error) {
         console.error('Error in getting all doctors at work:', error);
-        alert('An error occurred while receiving all the doctors at work');
+        //alert('An error occurred while receiving all the doctors at work');
+        return [];
     }
 }
 

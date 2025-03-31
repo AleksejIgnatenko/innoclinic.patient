@@ -24,7 +24,7 @@ async function GetAllActiveSpecializationsFetchAsync() {
         }
     } catch (error) {
         console.error('Error in getting all specialization:', error);
-        alert('An error occurred while receiving all specialization');
+        //alert('An error occurred while receiving all specialization');
     }
 }
 

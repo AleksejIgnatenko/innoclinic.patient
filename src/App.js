@@ -1,75 +1,44 @@
-import React, { Profiler, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
-import Cookies from 'js-cookie';
+import Sidebar from './components/organisms/Sidebar';
 import Home from './pages/Home';
 import Doctors from './pages/Doctors';
-import Sidebar from './components/Sidebar';
 import Services from './pages/Services';
-import CreateProfile from './pages/CreateProfile';
-import DoctorProfile from './pages/DoctorProfile';
-import PatientProfile from './pages/PatientProfile';
-
+import CreatePatientProfile from './pages/CreatePatientProfile';
+import Profile from './pages/Profile';
 function App() {
-  let isUserLoggedIn = Cookies.get('refreshToken') !== undefined;
-  const [showSignInModal, setSignInModal] = useState(false);
-  const [showSignUpModal, setShowSignUpModal] = useState(false);
-  const [showMakeAnAppointmentModel, setShowMakeAnAppointmentModel] = useState(false);
+  const [currentTheme, setCurrentTheme] = useState(() => {
+    return localStorage.getItem('theme') || 'light';
+  });
 
-  const toggleSignInModal = () => {
-    setSignInModal(!showSignInModal);
-    setShowSignUpModal(false);
-    setShowMakeAnAppointmentModel(false);
-  };
+  useEffect(() => {
+    const root = document.documentElement;
+    root.setAttribute('data-theme', currentTheme);
+    localStorage.setItem('theme', currentTheme);
+  }, [currentTheme]);
 
-  const toggleSignUpModal = () => {
-    setShowSignUpModal(!showSignUpModal);
-    setSignInModal(false);
-    setShowMakeAnAppointmentModel(false);
-  };
-
-  const toggleMakeAnAppointmentModel = () => {
-    if (showMakeAnAppointmentModel) {
-      const result = window.confirm('Do you really want to exit? Your appointment will not be saved.');
-      if (result) {
-        setShowMakeAnAppointmentModel(!showMakeAnAppointmentModel);
-        setShowSignUpModal(false);
-        setSignInModal(false);
-      }
-    } else {
-      setShowMakeAnAppointmentModel(!showMakeAnAppointmentModel);
-    }
+  const toggleTheme = () => {
+    setCurrentTheme(prevTheme => (prevTheme === 'dark' ? 'light' : 'dark'));
   };
 
   return (
-    <Router>
-      <Sidebar
-        isUserLoggedIn={isUserLoggedIn}
-        showSignInModal={showSignInModal}
-        toggleSignInModal={toggleSignInModal}
-        showSignUpModal={showSignUpModal}
-        toggleSignUpModal={toggleSignUpModal}
-        showMakeAnAppointmentModel={showMakeAnAppointmentModel}
-        toggleMakeAnAppointmentModel={toggleMakeAnAppointmentModel}
-      />
-      <div className="App">
-        <Routes>
-          <Route exact path="/" element={<Home />} />
-          <Route path="/doctors" element={<Doctors />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/createProfile" element={<CreateProfile />} />
-          <Route path="/patientProfile" element={<PatientProfile />} />
-          <Route path="/doctorProfile/:doctorId" element={<DoctorProfile
-            showSignInModal={showSignInModal}
-            toggleSignInModal={toggleSignInModal}
-            showSignUpModal={showSignUpModal}
-            toggleSignUpModal={toggleSignUpModal}
-            showMakeAnAppointmentModel={showMakeAnAppointmentModel}
-            toggleMakeAnAppointmentModel={toggleMakeAnAppointmentModel} />}
-          />
-        </Routes>
-      </div>
-    </Router>
+      <>
+        <Router>
+            <>
+              <Sidebar currentTheme={currentTheme} toggleTheme={toggleTheme} />
+              <div className="App">
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/doctors" element={<Doctors />} />
+                  <Route path="/services" element={<Services />} />
+                  <Route path="/create-patient-profile" element={<CreatePatientProfile />} />
+                  <Route path="/profile" element={<Profile />} />
+                </Routes>
+              </div>
+            </>
+        </Router>
+      </>
   );
 }
 

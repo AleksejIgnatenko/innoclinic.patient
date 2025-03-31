@@ -16,7 +16,7 @@ async function GetAllOfficesFetchAsync() {
         }
     } catch (error) {
         console.error('Error in fetching all offices:', error);
-        alert('An error occurred while fetching the offices. Please check your connection and try again.');
+        //alert('An error occurred while fetching the offices. Please check your connection and try again.');
     }
 }
 

@@ -16,7 +16,7 @@ async function GetAllAvailableTimeSlotsFetchAsync(date, timeSlotSize) {
         }
     } catch (error) {
         console.error('Error in creating appointment:', error);
-        alert('An error occurred while creating the appointment');
+        //alert('An error occurred while creating the appointment');
     }
 }
 

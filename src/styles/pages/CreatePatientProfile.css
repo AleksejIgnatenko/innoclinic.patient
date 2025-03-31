@@ -1,0 +1,7 @@
+.patient-info {
+    margin-top: 15px;
+}
+
+.patient-info p {
+    color: var(--foreground);
+}

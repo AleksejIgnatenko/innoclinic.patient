@@ -2,6 +2,7 @@ import { ServicesAPI } from "../api";
 import Cookies from 'js-cookie';
 import RefreshTokenFetchAsync from "../Authorization.API/RefreshTokenFetchAsync";
 
+
 async function GetServicesBySpecializationIdFethcAsync(specializationId) {
     try {
         let jwtToken = Cookies.get('accessToken');
@@ -10,7 +11,7 @@ async function GetServicesBySpecializationIdFethcAsync(specializationId) {
             jwtToken = Cookies.get('accessToken');
         }
         
-        const response = await fetch(`${ServicesAPI}/MedicalService/${specializationId}`, {
+        const response = await fetch(`${ServicesAPI}/MedicalService/services-by-specialization-id/${specializationId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -24,7 +25,7 @@ async function GetServicesBySpecializationIdFethcAsync(specializationId) {
         }
     } catch (error) {
         console.error('Error in getting all doctors at work:', error);
-        alert('An error occurred while receiving all the doctors at work');
+        //alert('An error occurred while receiving all the doctors at work');
 
         return [];
     }

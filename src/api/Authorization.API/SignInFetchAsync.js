@@ -12,7 +12,6 @@ async function SignInFetchAsync(signInModel) {
         });
 
         const data = await response.json();
-
         if (response.ok) {
             const { hashPassword, accessToken, refreshToken } = data;
             const passwordsMatch = comparePassword(signInModel.password, hashPassword);
@@ -31,17 +30,17 @@ async function SignInFetchAsync(signInModel) {
                     sameSite: 'strict', 
                     expires: refreshTokenExpiry, 
                     path: '/', 
-                    domain: 'localhost'
+                    domain: 'localhost',
                 });
 
                 window.location.href = "/";
             } else {
-                alert('You entered the wrong password.');
+                //alert('You entered the wrong password.');
             }
         }
     } catch (error) {
         console.error('Error during sign in:', error);
-        alert('An error occurred during sign in');
+        //alert('An error occurred during sign in');
     }
 }
 

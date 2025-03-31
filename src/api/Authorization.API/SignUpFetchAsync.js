@@ -30,7 +30,7 @@ async function SignUpFetchAsync(newAccount) {
         }
     } catch (error) {
         console.error('Error during registration:', error);
-        alert('An error occurred during sign up');
+        //alert('An error occurred during sign up');
     }
 }
 

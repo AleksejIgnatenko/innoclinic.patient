@@ -10,7 +10,9 @@ async function CreateAppointmentFetchAsync(appointmentModelRequest) {
             jwtToken = Cookies.get('accessToken');
         }
 
-        const response = await fetch(`${AppointmentAPI}/Appointment`, {
+        console.log(appointmentModelRequest);
+
+        const response = await fetch(`http://localhost:5005/api/Appointment`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -22,11 +24,12 @@ async function CreateAppointmentFetchAsync(appointmentModelRequest) {
         if (response.ok) {
            console.log("ok");
         } else {
-           throw new Error('Failed to create appointment');
+            const data = await response.json();
+            console.log(data);
         }
     } catch (error) {
         console.error('Error in creating appointment:', error);
-        alert('An error occurred while creating the appointment');
+        //alert('An error occurred while creating the appointment');
     }
 }
 

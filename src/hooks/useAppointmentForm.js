@@ -33,9 +33,8 @@ const useAppointmentForm = (initialAppointmentValues) => {
         ...prev,
         [field]: true
       }));
-
-      console.log(appointmentFormData);
     }
+    console.log(appointmentErrors);
   };
 
   const handleAppointmentChange = (field) => (event) => {
@@ -57,11 +56,19 @@ const useAppointmentForm = (initialAppointmentValues) => {
     updateAppointmentInputState(field, inputElement, labelElement);
   };
 
+  const resetAppointmentForm = () => {
+    setAppointmentFormData(initialAppointmentValues);
+    setAppointmentErrors({});
+};
+
   return {
     appointmentFormData,
+    setAppointmentFormData,
     appointmentErrors,
+    setAppointmentErrors,
     handleAppointmentChange,
     handleAppointmentBlur,
+    resetAppointmentForm,
     isAppointmentFormValid: appointmentErrors.doctorId && appointmentErrors.medicalServiceId && appointmentErrors.date && appointmentErrors.time
   };
 };

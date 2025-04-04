@@ -10,8 +10,6 @@ async function CreateAppointmentFetchAsync(appointmentModelRequest) {
             jwtToken = Cookies.get('accessToken');
         }
 
-        console.log(appointmentModelRequest);
-
         const response = await fetch(`http://localhost:5005/api/Appointment`, {
             method: 'POST',
             headers: {

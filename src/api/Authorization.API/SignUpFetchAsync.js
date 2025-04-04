@@ -8,25 +8,22 @@ async function SignUpFetchAsync(newAccount) {
             headers: {
                 'Content-Type': 'application/json'
             },
+            credentials: 'include',
             body: JSON.stringify(newAccount)
         });
 
-        const data = await response.json();
-
         if (response.ok) {
-            const { accessToken, refreshToken, message } = data;
-            alert(message);
-        
-            const accessTokenExpiry = 15 / (24 * 60);
-            const refreshTokenExpiry = 180;
-
-            Cookies.set('accessToken', accessToken, { sameSite: 'strict', expires: accessTokenExpiry });
-            Cookies.set('refreshToken', refreshToken, { secure: true, sameSite: 'strict', expires: refreshTokenExpiry });
-        } else if (response.status === 400) {
-            const errors = data.error;
-            for (const [key, value] of Object.entries(errors)) {
-                alert(`${key}: ${value}`);
-            }
+            alert("To confirm your email, check your email address and follow the link provided in the email.");
+            Cookies.set('isLoggedIn', true, {
+                sameSite: 'strict',
+                path: '/',
+                expires: 7,
+                domain: 'localhost'
+            });
+            window.location.href = "/";
+        } else {
+            const data = await response.json();
+            console.error("Sign up failed:", data);
         }
     } catch (error) {
         console.error('Error during registration:', error);

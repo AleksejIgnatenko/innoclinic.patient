@@ -23,13 +23,15 @@ async function GetPhotoByIdAsync(id) {
             return imageUrl;
         } else if (response.status === 404) {
             console.log('Photo not found');
+            return null;
         } else {
             const data = await response.json();
             console.log(data);
+            return null;
         }
     } catch (error) {
         console.error('Error in getting photo:', error);
-        return { status: 500, error: 'Internal Server Error' };
+        return null;
     }
 }
 

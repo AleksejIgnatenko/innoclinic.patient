@@ -1,10 +1,11 @@
 import React from 'react';
 import '../../styles/organisms/ProfileCard.css';
 
-const ProfileCard = ({ children }) => {
+const ProfileCard = ({ children, onClick }) => {
+    const cursorStyle = onClick ? { cursor: 'pointer' } : {};
 
     return (
-        <div class="profile-container">
+        <div className="profile-container" style={cursorStyle} onClick={onClick}>
             {children}
         </div>
     );

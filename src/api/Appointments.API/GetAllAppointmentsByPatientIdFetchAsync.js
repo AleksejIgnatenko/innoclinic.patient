@@ -1,8 +1,8 @@
 import { AppointmentAPI } from "../api";
 
-async function GetAllAvailableTimeSlotsFetchAsync(date, timeSlotSize) {
+async function GetAllAppointmentsByPatientIdFetchAsync(patientId) {
     try {
-        const response = await fetch(`${AppointmentAPI}/Appointment/all-available-time-slots?date=${date}&timeSlotSize=${timeSlotSize}`, {
+        const response = await fetch(`${AppointmentAPI}/Appointment/by-patient-id/${patientId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -21,4 +21,4 @@ async function GetAllAvailableTimeSlotsFetchAsync(date, timeSlotSize) {
     }
 }
 
-export default GetAllAvailableTimeSlotsFetchAsync;
+export default GetAllAppointmentsByPatientIdFetchAsync;

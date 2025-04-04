@@ -3,7 +3,7 @@ import { Map, Marker } from 'pigeon-maps';
 import '../../styles/organisms/CustomMap.css';
 import { CloseButton } from '../atoms/CloseButton';
 
-const CustomMap = ({ items, onClose }) => {
+const CustomMap = ({ items, handleMarkerClick, onClose }) => {
     const defaultCenter = [52.4368, 31.0164];
     
     useEffect(() => {
@@ -29,11 +29,6 @@ const CustomMap = ({ items, onClose }) => {
         };
     }, [onClose]);
 
-    
-    const handleMarkerClick = (office) => {
-        console.log(office)
-    };
-
     const osmProvider = (x, y, z) => {
         return `https://${(x + y) % 2 ? 'b' : 'a'}.tile.openstreetmap.org/${z}/${x}/${y}.png`;
     };
@@ -43,7 +38,7 @@ const CustomMap = ({ items, onClose }) => {
             <div className="modal-overlay">
                 <CloseButton onClick={onClose}/>
                 {items.length < 1 ? (
-                    <div>No items available</div>
+                    <Map center={defaultCenter} zoom={10} width="800px" height="400px" provider={osmProvider}></Map>
                 ) : (
                     <Map center={defaultCenter} zoom={10} width="800px" height="400px" provider={osmProvider}>
                         {items.map((item, index) => {

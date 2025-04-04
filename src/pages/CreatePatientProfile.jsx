@@ -36,7 +36,9 @@ function CreatePatientProfile() {
 
         const result = await CreatePatientFetchAsync(formData);
 
-        if (result.status === 409) {
+        if(result.status === 200) {
+            window.location.href = '/';
+        } else if (result.status === 409) {
             setFoundPatients(result.foundPatients);
             console.log(result.foundPatients)
             setFoundPatientModalShow(true);

@@ -4,7 +4,6 @@ import RefreshTokenFetchAsync from "../Authorization.API/RefreshTokenFetchAsync"
 
 async function CreatePatientFetchAsync(patient) {
     try {
-        console.log(patient);
         let jwtToken = Cookies.get('accessToken');
         if (!jwtToken) {
             await RefreshTokenFetchAsync(); 

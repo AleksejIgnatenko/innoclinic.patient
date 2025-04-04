@@ -5,6 +5,7 @@ import { ButtonBase } from '../components/atoms/ButtonBase';
 import FilterModal from "../components/organisms/FilterModal";
 import CheckboxWrapper from "../components/molecules/CheckboxWrapper";
 import '../styles/pages/Doctors.css';
+import { useNavigate } from "react-router-dom";
 
 import GetAllSpecializationFetchAsync from "../api/Services.API/GetAllSpecializationFetchAsync";
 import GetAllOfficesFetchAsync from "../api/Offices.API/GetAllOfficesFetchAsync";
@@ -12,13 +13,19 @@ import GetAllDoctorsFetchAsync from "../api/Profiles.API/GetAllDoctorsFetchAsync
 import ProfileCard from "../components/organisms/ProfileCard";
 import GetPhotoByIdAsync from "../api/Documents.API/GetPhotoByIdAsync";
 import CustomMap from "../components/organisms/CustomMap";
+import FormModal from "../components/organisms/FormModal";
 
 export default function Doctors() {
+    const navigate = useNavigate();
 
     const [doctors, setDoctors] = useState([]);
     const [editableDoctors, setEditableDoctors] = useState([]);
     const [specializations, setSpecializations] = useState([]);
     const [offices, setOffices] = useState([]);
+
+    const [isOfficeModalOpen, setIsOfficeModalOpen] = useState(false);
+    const [selectedOffice, setSelectedOffice] = useState(null);
+    const [selectedOfficePhoto, setSelectedOfficePhoto] = useState(null);
 
     const [isShowMap, setIsShowMap] = useState(false);
 
@@ -54,7 +61,6 @@ export default function Doctors() {
                 setDoctors(doctorsWithPhotos);
                 const formattedDoctors = formatDoctors(doctorsWithPhotos);
                 setEditableDoctors(formattedDoctors);
-
             } catch (error) {
                 console.error('Error fetching data:', error);
             } finally {
@@ -142,6 +148,26 @@ export default function Doctors() {
         setIsFilterModalOpen(!isFilterModalOpen);
     }
 
+    const handleSelectOfficeClick = async (office) => {
+        setIsShowMap(!isShowMap);
+        setIsOfficeModalOpen(!isOfficeModalOpen);
+        setSelectedOffice(office);
+        if (office.photoId) {
+            const officePhoto = await GetPhotoByIdAsync(office.photoId);
+            setSelectedOfficePhoto(officePhoto);
+        }
+    };
+
+    const toggleOfficeModalClick = () => {
+        setIsOfficeModalOpen(!isOfficeModalOpen);
+        setIsShowMap(!isShowMap);
+    }
+
+    const handleSelectOffice = (event) => {
+        event.preventDefault();
+        handleFilterOfficeChange(selectedOffice);
+    };
+
     return (
         <>
             <Toolbar
@@ -165,22 +191,22 @@ export default function Doctors() {
                                 <p className="no-items">Nothing was found</p>
                             )}
                             <div className="card-wrapper">
-                            <div className="card-container">
-                                {editableDoctors.map((editableDoctor, index) => (
-                                    <ProfileCard key={index} className="card" id={editableDoctor.id}>
-                                        <div class="img-container">
-                                            <img src={editableDoctor.photoUrl} alt="" />
-                                        </div>
-                                        <div className="profile-content">
-                                            <p>Full name: {editableDoctor.doctorFullName}</p>
-                                            <p>Cabinet number: {editableDoctor.cabinetNumber}</p>
-                                            <p>Specialization: {editableDoctor.specialization}</p>
-                                            <p>Experience: {editableDoctor.experience}</p>
-                                            <p>Office address: {editableDoctor.address}</p>
-                                        </div>
-                                    </ProfileCard>
-                                ))}
-                            </div>
+                                <div className="card-container">
+                                    {editableDoctors.map((editableDoctor, index) => (
+                                        <ProfileCard key={index} className="card" id={editableDoctor.id} onClick={() => navigate(`/doctor/${editableDoctor.id}`)}>
+                                            <div class="img-container">
+                                                <img src={editableDoctor.photoUrl} alt="" className="img-area" />
+                                            </div>
+                                            <div className="profile-content">
+                                                <p>Full name: {editableDoctor.doctorFullName}</p>
+                                                <p>Cabinet number: {editableDoctor.cabinetNumber}</p>
+                                                <p>Specialization: {editableDoctor.specialization}</p>
+                                                <p>Experience: {editableDoctor.experience}</p>
+                                                <p>Office address: {editableDoctor.address}</p>
+                                            </div>
+                                        </ProfileCard>
+                                    ))}
+                                </div>
                             </div>
                         </>
                     )}
@@ -196,15 +222,15 @@ export default function Doctors() {
                                                 <CheckboxWrapper
                                                     id={office.id}
                                                     name="office-address"
-                                                    value={office.address}
+                                                    value={`${office.city} ${office.street} ${office.houseNumber} ${office.officeNumber}`}
                                                     checked={selectedOffices.some(selectedOffice => selectedOffice.id === office.id)}
                                                     onChange={() => handleFilterOfficeChange(office)}
-                                                    label={office.city}
+                                                    label={`${office.city} ${office.street} ${office.houseNumber} ${office.officeNumber}`}
                                                 />
                                             </div>
                                         ))
                                     ) : (
-                                        <p>Offices not found.</p>
+                                        <p className="no-items">Offices not found.</p>
                                     )}
                                 </div>
                             </div>
@@ -225,7 +251,7 @@ export default function Doctors() {
                                             </div>
                                         ))
                                     ) : (
-                                        <p>Specializations not found.</p>
+                                        <p className="no-items">Specializations not found.</p>
                                     )}
                                 </div>
                             </div>
@@ -242,9 +268,33 @@ export default function Doctors() {
                 </div>
             )}
 
+            {isOfficeModalOpen && (
+                <FormModal title={"Office"} showCloseButton={true} onClose={toggleOfficeModalClick}>
+                    <div className="img-container">
+                        <img src={selectedOfficePhoto} alt="" className="img-area" />
+                    </div>
+                    <div className="profile-content">
+                        {selectedOffice ? (
+                            <>
+                                <p>City: {selectedOffice.city}</p>
+                                <p>Street: {selectedOffice.street}</p>
+                                <p>House Number: {selectedOffice.houseNumber}</p>
+                                <p>Office Number: {selectedOffice.officeNumber}</p>
+                                <ButtonBase onClick={handleSelectOffice} type="button">
+                                    Select
+                                </ButtonBase>
+                            </>
+                        ) : (
+                            <p>No office information available</p>
+                        )}
+                    </div>
+                </FormModal>
+            )}
+
             {isShowMap &&
                 <CustomMap
                     items={offices}
+                    handleMarkerClick={handleSelectOfficeClick}
                     onClose={toggleMapModalClick}
                 />
             }

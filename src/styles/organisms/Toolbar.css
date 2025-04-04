@@ -6,7 +6,7 @@
     background-color: var(--toolbar-bg);
     position: fixed;
     top: 0;
-    z-index: 500;
+    z-index: 90;
     padding: 0 20px;
   }
 

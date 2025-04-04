@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { IconBase } from "../atoms/IconBase";
 import '../../styles/organisms/Sidebar.css';
 import 'boxicons/css/boxicons.min.css';
@@ -23,11 +23,15 @@ import CreateAppointmentFetchAsync from "../../api/Appointments.API/CreateAppoin
 import GetPatientByAccountIdFromTokenFetchAsync from "../../api/Profiles.API/GetPatientByAccountIdFromTokenFetchAsync";
 import { hashPassword } from "../../utils/PasswordUtils";
 import GetPhotoByIdAsync from "../../api/Documents.API/GetPhotoByIdAsync";
+import LogOutFetchAsync from "../../api/Authorization.API/LogOutFetchAsync";
 
 export default function Sidebar({ currentTheme, toggleTheme }) {
+    const location = useLocation();
+    const navigate = useNavigate(); 
 
     const [photo, setPhoto] = useState(null);
-    const [patient, setPatient] = useState(null);
+    const [profile, setProfile] = useState(null);
+
     const [specializations, setSpecializations] = useState([]);
     const [doctors, setDoctors] = useState([]);
     const [services, setServices] = useState([]);
@@ -43,31 +47,30 @@ export default function Sidebar({ currentTheme, toggleTheme }) {
 
     const [officeOptions, setOfficeOptions] = useState([]);
 
-
     const [showSidebar, setShowSidebar] = useState(false);
 
     const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
     const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
     const [isCreateAppointmentModalOpen, setIsCreateAppointmentModalOpen] = useState(false);
 
-    const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+    const isLoggedIn = Boolean(Cookies.get('isLoggedIn'));
 
     const [isLoading, setIsLoading] = useState(false);
 
     const [timeSlots, setTimeSlots] = useState([]);
 
-    const { signInFormData, signInErrors, handleSignInChange, handleSignInBlur, isSignInFormValid } = useSignInForm({
+    const { signInFormData, signInErrors, handleSignInChange, handleSignInBlur, resetSignInForm, isSignInFormValid } = useSignInForm({
         email: '',
         password: ''
     });
 
-    const { signUpFormData, signUpErrors, handleSignUpChange, handleSignUpBlur, isSignUpFormValid } = useSignUpForm({
+    const { signUpFormData, signUpErrors, handleSignUpChange, handleSignUpBlur, resetSignUpForm, isSignUpFormValid } = useSignUpForm({
         email: '',
         password: '',
         repeatPassword: ''
     });
 
-    const { appointmentFormData, appointmentErrors, handleAppointmentChange, handleAppointmentBlur, isAppointmentFormValid } = useAppointmentForm({
+    const { appointmentFormData, appointmentErrors, handleAppointmentChange, handleAppointmentBlur, resetAppointmentForm, isAppointmentFormValid } = useAppointmentForm({
         doctorId: '',
         medicalServiceId: '',
         officeId: '',
@@ -97,14 +100,12 @@ export default function Sidebar({ currentTheme, toggleTheme }) {
                 }))
                 setOfficeOptions(officeOptions);
 
-                const fetchedPatient = await GetPatientByAccountIdFromTokenFetchAsync();
-                if (fetchedPatient.account.photoId) {
-                    const fetchedPhoto = await GetPhotoByIdAsync(fetchedPatient.account.photoId);
+                const fetchedProfile = await GetPatientByAccountIdFromTokenFetchAsync();
+                if (fetchedProfile.account.photoId) {
+                    const fetchedPhoto = await GetPhotoByIdAsync(fetchedProfile.account.photoId);
                     setPhoto(fetchedPhoto);
                 }
-                setPatient(fetchedPatient);
-
-                setIsUserLoggedIn(Boolean(Cookies.get('refreshToken')));
+                setProfile(fetchedProfile);
             } catch (error) {
                 console.error('Error fetching data:', error);
             } finally {
@@ -149,6 +150,29 @@ export default function Sidebar({ currentTheme, toggleTheme }) {
             fetchData();
         }
     }, [appointmentFormData.medicalServiceId, appointmentFormData.date]);
+
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        if (params.get('modal') === 'create-appointment' && !isCreateAppointmentModalOpen) {
+            const doctorId = params.get('doctorId'); 
+            setIsCreateAppointmentModalOpen(true);
+            if (doctorId) {
+                const selectedDoctor = doctors.find(doctor => doctor.id === doctorId);
+                if (selectedDoctor) {
+                    const fullName = `${selectedDoctor.firstName} ${selectedDoctor.middleName} ${selectedDoctor.lastName}`;
+                    setSelectDoctorName(fullName);
+                    appointmentFormData.doctorId = doctorId;
+                } else {
+                    setSelectDoctorName('');
+                }
+            }
+        }
+    }, [location.search]);
+
+    const truncateName = (name) => {
+        if (!name) return '';
+        return name.length > 10 ? name.substring(0, 10) + '...' : name;
+    };
 
     const toggleSidebar = () => {
         setShowSidebar(!showSidebar);
@@ -214,13 +238,13 @@ export default function Sidebar({ currentTheme, toggleTheme }) {
         appointmentErrors.medicalServiceId = true;
     };
 
-    const handleLogOut = () => {
-        Cookies.remove('accessToken');
-        Cookies.remove('refreshToken');
-        window.location.href = "/";
+    async function handleLogOut () {
+        await LogOutFetchAsync();
     };
 
     const toggleSignInModal = () => {
+        resetSignInForm();
+
         setIsSignInModalOpen(!isSignInModalOpen);
 
         setIsSignUpModalOpen(false);
@@ -228,6 +252,8 @@ export default function Sidebar({ currentTheme, toggleTheme }) {
     };
 
     const toggleSignUpModal = () => {
+        resetSignUpForm();
+
         setIsSignUpModalOpen(!isSignUpModalOpen);
 
         setIsSignInModalOpen(false);
@@ -235,10 +261,24 @@ export default function Sidebar({ currentTheme, toggleTheme }) {
     };
 
     const toggleCreateAppointmentModal = () => {
-        setIsCreateAppointmentModalOpen(!isCreateAppointmentModalOpen);
+        resetAppointmentForm();
 
         setIsSignInModalOpen(false);
         setIsSignUpModalOpen(false);
+        
+        const newModalState = !isCreateAppointmentModalOpen;
+        setIsCreateAppointmentModalOpen(newModalState);
+    
+        const currentPath = location.pathname;
+        const params = new URLSearchParams(location.search);
+    
+        if (!newModalState) {
+            params.delete('modal');
+            params.delete('doctorId');
+        }
+    
+        const appointmentPath = `${currentPath}?${params.toString()}`;
+        navigate(appointmentPath); 
     };
 
     const handleSignIn = async (e) => {
@@ -307,7 +347,7 @@ export default function Sidebar({ currentTheme, toggleTheme }) {
                         </ul>
                     </li>
                     <li>
-                        <Link onClick={toggleCreateAppointmentModal}>
+                        <Link onClick={toggleCreateAppointmentModal} to="?modal=create-appointment">
                             <i className='bx bx-plus' ></i>
                             <span className="link_name">Make an appointment</span>
                         </Link>
@@ -324,7 +364,7 @@ export default function Sidebar({ currentTheme, toggleTheme }) {
                             <li><Link className="link_name" onClick={toggleTheme}>Switching themes</Link></li>
                         </ul>
                     </li>
-                    {isUserLoggedIn && patient && !isLoading ? (
+                    {isLoggedIn ? (
                         <li>
                             <div className="profile-details">
                                 <Link to="/profile?tab=personal-information">
@@ -332,14 +372,23 @@ export default function Sidebar({ currentTheme, toggleTheme }) {
                                         <img src={photo} alt="profileImg" />
                                     </div>
                                     <div className="profile-info">
-                                        <div className="profile_name">{`${patient.firstName} ${patient.lastName} ${patient.middleName}`}</div>
-                                        <div className="role">{patient.role}</div>
+                                        {profile ? (
+                                            <>
+                                                <div className="profile_name">{`${truncateName(`${profile.firstName} ${profile.lastName}`)}`}</div>
+                                                <div className="role">{profile.role || 'Role'}</div>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <div className="profile_name">Name</div>
+                                                <div className="role">Role</div>
+                                            </>
+                                        )}
                                     </div>
                                 </Link>
                                 <i className='bx bx-log-out' onClick={handleLogOut}></i>
                             </div>
                         </li>
-                    ) : !isLoading ? (
+                    ) : (
                         <>
                             <li>
                                 <Link onClick={toggleSignInModal}>
@@ -360,8 +409,6 @@ export default function Sidebar({ currentTheme, toggleTheme }) {
                                 </ul>
                             </li>
                         </>
-                    ) : (
-                        <li></li>
                     )}
 
                     {isSignInModalOpen && (
@@ -461,10 +508,10 @@ export default function Sidebar({ currentTheme, toggleTheme }) {
                                     <InputWrapper
                                         type="text"
                                         label="Doctor"
-                                        id="doctorId"
+                                        id="doctor"
                                         value={selectDoctorName}
                                         onChange={(e) => handleDoctorChange(e.target.value)}
-                                        onBlur={handleAppointmentBlur('doctorId')}
+                                        onBlur={handleAppointmentBlur('doctor')}
                                         required
                                     />
                                     {filteredDoctors.length > 0 && (

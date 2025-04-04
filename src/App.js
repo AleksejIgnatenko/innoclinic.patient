@@ -7,6 +7,8 @@ import Doctors from './pages/Doctors';
 import Services from './pages/Services';
 import CreatePatientProfile from './pages/CreatePatientProfile';
 import Profile from './pages/Profile';
+import Doctor from './pages/Doctor';
+import AppointmentResults from './pages/AppointmentResults';
 function App() {
   const [currentTheme, setCurrentTheme] = useState(() => {
     return localStorage.getItem('theme') || 'light';
@@ -30,10 +32,12 @@ function App() {
               <div className="App">
                 <Routes>
                   <Route path="/" element={<Home />} />
+                  <Route path="/doctor/:id?" element={<Doctor />} />
                   <Route path="/doctors" element={<Doctors />} />
                   <Route path="/services" element={<Services />} />
                   <Route path="/create-patient-profile" element={<CreatePatientProfile />} />
                   <Route path="/profile" element={<Profile />} />
+                  <Route path="/appointment-results/:appointmentId?" element={<AppointmentResults />} />
                 </Routes>
               </div>
             </>

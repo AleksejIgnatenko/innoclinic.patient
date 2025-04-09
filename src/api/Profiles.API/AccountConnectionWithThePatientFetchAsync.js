@@ -16,7 +16,6 @@ async function AccountConnectionWithThePatientFetchAsync(id) {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${jwtToken}`,
             },
-            body: JSON.stringify({ patientId: id })
         });
 
         if (response.ok) {
@@ -27,7 +26,7 @@ async function AccountConnectionWithThePatientFetchAsync(id) {
         }
     } catch (error) {
         console.error('Error in account connection with the patient:', error);
-        alert('An error occurred while connecting the account with the patient');
+        //alert('An error occurred while connecting the account with the patient');
         return { status: 500, error: 'Internal Server Error' };
     }
 }

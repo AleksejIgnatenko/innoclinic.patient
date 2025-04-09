@@ -1,8 +1,8 @@
 import { AppointmentAPI } from "../api";
 
-async function GetAllAvailableTimeSlotsFetchAsync(date, timeSlotSize) {
+async function GetAllAvailableTimeSlotsFetchAsync(date, timeSlotSize, doctorId) {
     try {
-        const response = await fetch(`${AppointmentAPI}/Appointment/all-available-time-slots?date=${date}&timeSlotSize=${timeSlotSize}`, {
+        const response = await fetch(`${AppointmentAPI}/Appointment/all-available-time-slots?date=${date}&timeSlotSize=${timeSlotSize}&doctorId=${doctorId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -10,13 +10,14 @@ async function GetAllAvailableTimeSlotsFetchAsync(date, timeSlotSize) {
         });
 
         if (response.ok) {
-           return await response.json();
+            return await response.json();
         } else {
-           throw new Error('Failed to create appointment');
+            const result = await response.json();
+            console.error('Failed to fetch available time slots:', result);
         }
     } catch (error) {
-        console.error('Error in creating appointment:', error);
-        alert('An error occurred while creating the appointment');
+        console.error('Error fetching available time slots:', error);
+        // alert('An error occurred while fetching available time slots.');
     }
 }
 

@@ -6,7 +6,7 @@ async function CreateAppointmentFetchAsync(appointmentModelRequest) {
     try {
         let jwtToken = Cookies.get('accessToken');
         if (!jwtToken) {
-            await RefreshTokenFetchAsync(); 
+            await RefreshTokenFetchAsync();
             jwtToken = Cookies.get('accessToken');
         }
 
@@ -19,14 +19,13 @@ async function CreateAppointmentFetchAsync(appointmentModelRequest) {
             body: JSON.stringify(appointmentModelRequest)
         });
 
-        if (response.ok) {
-           console.log("ok");
-        } else {
-           throw new Error('Failed to create appointment');
+        if (!response.ok) {
+            const data = await response.json();
+            console.log(data);
         }
     } catch (error) {
         console.error('Error in creating appointment:', error);
-        alert('An error occurred while creating the appointment');
+        //alert('An error occurred while creating the appointment');
     }
 }
 

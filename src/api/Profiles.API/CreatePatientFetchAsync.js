@@ -2,7 +2,7 @@ import { ProfilesAPI } from "../api";
 import Cookies from 'js-cookie';
 import RefreshTokenFetchAsync from "../Authorization.API/RefreshTokenFetchAsync";
 
-async function CreatePatientFetchAsync(patientModel) {
+async function CreatePatientFetchAsync(patient) {
     try {
         let jwtToken = Cookies.get('accessToken');
         if (!jwtToken) {
@@ -16,7 +16,7 @@ async function CreatePatientFetchAsync(patientModel) {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${jwtToken}`,
             },
-            body: JSON.stringify(patientModel)
+            body: JSON.stringify(patient)
         });
 
         if (response.ok) {
@@ -26,11 +26,12 @@ async function CreatePatientFetchAsync(patientModel) {
             return { status: 409, foundPatients: data.foundPatients };
         } else {
             const errorData = await response.json();
+            console.log(errorData);
             return { status: response.status, error: errorData }; 
         }
     } catch (error) {
         console.error('Error in creating patient:', error);
-        alert('An error occurred while creating the patient');
+        //alert('An error occurred while creating the patient');
         return { status: 500, error: 'Internal Server Error' };
     }
 }

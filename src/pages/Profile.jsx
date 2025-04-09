@@ -23,6 +23,10 @@ import GetAllOfficesFetchAsync from "../api/Offices.API/GetAllOfficesFetchAsync"
 import { SelectWrapper } from "../components/molecules/SelectWrapper";
 import GetAllAvailableTimeSlotsFetchAsync from "../api/Appointments.API/GetAllAvailableTimeSlotsFetchAsync";
 import { ButtonBase } from "../components/atoms/ButtonBase";
+import UpdatePatientFecthAsync from "../api/Profiles.API/UpdatePatientFecthAsync";
+import CreatePhotoFetchAsync from "../api/Documents.API/CreatePhotoFetchAsync";
+import UpdatePhotoFetchAsync from "../api/Documents.API/UpdatePhotoFetchAsync";
+import ImageUploader from "../components/organisms/ImageUploader";
 
 function Profile() {
     const location = useLocation();
@@ -44,6 +48,7 @@ function Profile() {
 
     const [activeTab, setActiveTab] = useState('personal-information');
 
+    const [isEditing, setIsEditing] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
     const [filteredDoctors, setFilteredDoctors] = useState([]);
@@ -57,10 +62,11 @@ function Profile() {
 
     const [timeSlots, setTimeSlots] = useState([]);
 
-    const { formData, setFormData, errors, handleChange, handleBlur, resetForm, isFormValid } = usePatientForm({
+    const { formData, setFormData, errors, setErrors, handleChange, handleBlur, handlePhoneNumberKeyDown, resetForm, isFormValid } = usePatientForm({
         firstName: '',
         lastName: '',
         middleName: '',
+        phoneNumber: '',
         dateOfBirth: '',
     });
 
@@ -80,54 +86,54 @@ function Profile() {
         'medicalServiceName',
     ];
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                toggleLoader(true);
+    const fetchData = async () => {
+        try {
+            toggleLoader(true);
 
-                const fetchedSpecializations = await GetAllActiveSpecializationsFetchAsync();
-                setSpecializations(fetchedSpecializations);
+            const fetchedSpecializations = await GetAllActiveSpecializationsFetchAsync();
+            setSpecializations(fetchedSpecializations);
 
-                const fetchedDoctors = await GetAllDoctorsAtWorkFetchAsync();
-                setDoctors(fetchedDoctors);
+            const fetchedDoctors = await GetAllDoctorsAtWorkFetchAsync();
+            setDoctors(fetchedDoctors);
 
-                const fetchedServices = await GetAllActiveMedicalServicesFetchAsync();
-                setServices(fetchedServices);
+            const fetchedServices = await GetAllActiveMedicalServicesFetchAsync();
+            setServices(fetchedServices);
 
-                const fetchedOffices = await GetAllOfficesFetchAsync();
-                const officeOptions = fetchedOffices.map(({ id, city, street, houseNumber, officeNumber }) => ({
-                    id,
-                    value: id,
-                    displayValue: `${city} ${street} ${houseNumber} ${officeNumber}`
-                }))
-                setOfficeOptions(officeOptions);
+            const fetchedOffices = await GetAllOfficesFetchAsync();
+            const officeOptions = fetchedOffices.map(({ id, city, street, houseNumber, officeNumber }) => ({
+                id,
+                value: id,
+                displayValue: `${city} ${street} ${houseNumber} ${officeNumber}`
+            }))
+            setOfficeOptions(officeOptions);
 
-                const fetchedPatient = await GetPatientByAccountIdFromTokenFetchAsync();
+            const fetchedPatient = await GetPatientByAccountIdFromTokenFetchAsync();
 
-                if (fetchedPatient.account.photoId) {
-                    const fetchedPhoto = await GetPhotoByIdAsync(fetchedPatient.account.photoId);
-                    setPhoto(fetchedPhoto);
-                    setEditingPhoto(fetchedPhoto);
-                }
-
-                const fetchedAppointments = await GetAllAppointmentsByPatientIdFetchAsync(fetchedPatient.id);
-                setAppointments(fetchedAppointments);
-
-                const formattedAppointments = formatAppointment(fetchedAppointments);
-                setEditingAppointments(formattedAppointments);
-
-                setPatient(fetchedPatient);
-
-                const formattedPatient = formatPatient(fetchedPatient);
-                setFormData(formattedPatient);
-
-            } catch (error) {
-                console.error('Error fetching patient:', error);
-            } finally {
-                toggleLoader(false);
+            if (fetchedPatient.account.photoId) {
+                const fetchedPhoto = await GetPhotoByIdAsync(fetchedPatient.account.photoId);
+                setPhoto(fetchedPhoto);
+                setEditingPhoto(fetchedPhoto);
             }
-        };
 
+            const fetchedAppointments = await GetAllAppointmentsByPatientIdFetchAsync(fetchedPatient.id);
+            setAppointments(fetchedAppointments);
+
+            const formattedAppointments = formatAppointment(fetchedAppointments);
+            setEditingAppointments(formattedAppointments);
+
+            setPatient(fetchedPatient);
+
+            const formattedPatient = formatPatient(fetchedPatient);
+            setFormData(formattedPatient);
+
+        } catch (error) {
+            console.error('Error fetching patient:', error);
+        } finally {
+            toggleLoader(false);
+        }
+    };
+
+    useEffect(() => {
         fetchData();
     }, []);
 
@@ -139,7 +145,7 @@ function Profile() {
 
                 if (findService) {
                     const timeSlotSize = findService.serviceCategory.timeSlotSize;
-                    const fetchedTimeSlots = await GetAllAvailableTimeSlotsFetchAsync(appointmentFormData.date, timeSlotSize);
+                    const fetchedTimeSlots = await GetAllAvailableTimeSlotsFetchAsync(appointmentFormData.date, timeSlotSize, appointmentFormData.doctorId);
                     const timeSlots = fetchedTimeSlots.map((timeSlot) => {
                         const [startTime, endTime] = timeSlot.split(' - ');
                         const id = `${startTime.replace(':', '')}${endTime.replace(':', '')}`;
@@ -161,10 +167,10 @@ function Profile() {
             }
         };
 
-        if (appointmentFormData.medicalServiceId && appointmentFormData.date) {
+        if (appointmentFormData.medicalServiceId && appointmentFormData.date && appointmentFormData.doctorId) {
             fetchData();
         }
-    }, [appointmentFormData.medicalServiceId, appointmentFormData.date]);
+    }, [appointmentFormData.medicalServiceId, appointmentFormData.date, appointmentFormData.doctorId]);
 
     useEffect(() => {
         const tab = new URLSearchParams(location.search).get('tab');
@@ -309,6 +315,52 @@ function Profile() {
         //await CreateAppointmentFetchAsync(appointmentData);
     };
 
+    const toggleEditClick = () => {
+        if (isEditing) {
+            const confirmCancel = window.confirm("Do you really want to cancel? Changes will not be saved.");
+            if (!confirmCancel) {
+                return;
+            }
+            setFormData(patient);
+        }
+        setErrors({
+            firstName: true,
+            lastName: true,
+            phoneNumber: true,
+            dateOfBirth: true,
+        });
+        setIsEditing(!isEditing);
+    };
+
+    async function handleUpdate() {
+        setIsEditing(false);
+
+        let photoId = '';
+        if (!patient.account.photoId && editingPhoto) {
+            photoId = await CreatePhotoFetchAsync(editingPhoto);
+
+            setPhoto(editingPhoto);
+        } else if (editingPhoto instanceof Blob) {
+            const imageUrl = URL.createObjectURL(editingPhoto);
+            setPhoto(imageUrl)
+
+            await UpdatePhotoFetchAsync(editingPhoto, patient.photoId);
+        }
+
+        const updatePatientRequest = {
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            middleName: formData.middleName,
+            isLinkedToAccount: patient.isLinkedToAccount,
+            phoneNumber: formData.phoneNumber,
+            dateOfBirth: formData.dateOfBirth,
+            photoId: photoId,
+        }
+
+        await UpdatePatientFecthAsync(patient.id, updatePatientRequest);
+        fetchData();
+    }
+
     return (
         <>
             <Toolbar pageTitle="Profile" />
@@ -335,23 +387,93 @@ function Profile() {
 
                     {activeTab === 'personal-information' && (
                         <ProfileCard>
-                            {patient &&
-                                <div data-content className={activeTab === 'personal-information' ? 'is-active' : ''} id="personalInformation">
-                                    <div className="profile-img">
-                                        <div class="img-container">
-                                            <img src={photo} alt="" className={photo ? '' : 'img-area'} />
-                                        </div>
-                                    </div>
-                                    <div className="profile-content">
-                                        <p>First name: {formData.firstName}</p>
-                                        <p>Last name: {formData.lastName}</p>
-                                        <p>Middle name: {formData.middleName}</p>
-                                        <p>Phone Number: {formData.middleName}</p>
-                                        <p>Date of birth: {formData.dateOfBirth}</p>
-                                    </div>
-                                </div>
-                            }
-                        </ProfileCard>
+                        <div className="profile-icon-container">
+                            {isEditing ? (
+                                <>
+                                    <IconBase
+                                        name={"bx-check"}
+                                        onClick={isFormValid ? handleUpdate : null}
+                                        style={{ cursor: isFormValid ? 'pointer' : 'not-allowed' }}
+                                        className={isFormValid ? '' : 'icon-invalid'}
+                                    />
+                                    <IconBase name={"bx-x"} onClick={toggleEditClick} />
+                                </>
+                            ) : (
+                                <IconBase name={"bx-pencil"} onClick={toggleEditClick} style={{ cursor: 'pointer' }} />
+                            )}
+                        </div>
+                        {isEditing ? (
+                            <div className="img-container">
+                                <ImageUploader
+                                    photo={photo}
+                                    setPhoto={setEditingPhoto}
+                                />
+                            </div>
+                        ) : (
+                            <div className="img-container">
+                                <img src={photo} alt="" className={photo ? '' : 'img-area'} />
+                            </div>
+                        )}
+
+                        {isEditing ? (
+                            <div>
+                                <InputWrapper
+                                    type="text"
+                                    label="First Name"
+                                    id="firstName"
+                                    value={formData.firstName}
+                                    onBlur={handleBlur('firstName')}
+                                    onChange={handleChange('firstName')}
+                                    required
+                                />
+                                <InputWrapper
+                                    type="text"
+                                    label="Last Name"
+                                    id="lastName"
+                                    value={formData.lastName}
+                                    onBlur={handleBlur('lastName')}
+                                    onChange={handleChange('lastName')}
+                                    required
+                                />
+                                <InputWrapper
+                                    type="text"
+                                    label="Middle Name"
+                                    id="middleName"
+                                    value={formData.middleName}
+                                    onBlur={handleBlur('middleName', false)}
+                                    onChange={handleChange('middleName', false)}
+                                    required
+                                />
+                                <InputWrapper
+                                    type="text"
+                                    label="Phone Number"
+                                    id="phoneNumber"
+                                    value={formData.phoneNumber}
+                                    onBlur={handleBlur('phoneNumber')}
+                                    onChange={handleChange('phoneNumber')}
+                                    onKeyDown={handlePhoneNumberKeyDown}
+                                    required
+                                />
+                                <InputWrapper
+                                    type="date"
+                                    label="Date Of Birth"
+                                    id="dateOfBirth"
+                                    value={formData.dateOfBirth}
+                                    onBlur={handleBlur('dateOfBirth')}
+                                    onChange={handleChange('dateOfBirth')}
+                                    required
+                                />
+                            </div>
+                        ) : (
+                            <div className="profile-content">
+                                <p>First name: {formData.firstName}</p>
+                                <p>Last name: {formData.lastName}</p>
+                                <p>Middle name: {formData.middleName}</p>
+                                <p>Phone Number: {formData.phoneNumber}</p>
+                                <p>Date of birth: {formData.dateOfBirth}</p>
+                            </div>
+                        )}
+                    </ProfileCard>
                     )}
 
                     {activeTab === 'appointment-results' && (
@@ -376,7 +498,9 @@ function Profile() {
                                             </thead>
                                             <tbody>
                                                 {editingEppointments.map(appointment => (
-                                                    <tr key={appointment.id}>
+                                                    <tr key={appointment.id}
+                                                        className={appointment.isApproved ? 'approved-row' : ''}
+                                                    >
                                                         {columnNames.map(columnName => (
                                                             <td key={columnName}>{appointment[columnName]}</td>
                                                         ))}
@@ -386,7 +510,7 @@ function Profile() {
                                                         >
                                                             Appointment Results
                                                         </td>
-                                                        {editingEppointments.isApproved ? (
+                                                        {appointment.isApproved ? (
                                                             <td>
                                                             </td>
                                                         ) : (

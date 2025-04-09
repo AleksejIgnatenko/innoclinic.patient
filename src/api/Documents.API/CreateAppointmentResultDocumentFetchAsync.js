@@ -10,8 +10,6 @@ async function CreateAppointmentResultDocumentFetchAsync(appointmentResult) {
             jwtToken = Cookies.get('accessToken');
         }
 
-        console.log(appointmentResult);
-
         const response = await fetch(`${DocumentsAPI}/Document`, {
             method: 'POST',
             headers: {

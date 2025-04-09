@@ -6,12 +6,11 @@ const usePatientForm = (initialValues) => {
     const [errors, setErrors] = useState({
         firstName: false,
         lastName: false,
-        middleName: true,
         phoneNumber: false,
         dateOfBirth: false,
     });
 
-    const updateInputState = (field, input, label) => {
+    const updateInputState = (field, input, label, validate) => {
         let currentDate;
         let inputDate;
 
@@ -20,28 +19,20 @@ const usePatientForm = (initialValues) => {
             inputDate = new Date(input.value);
         }
 
-        if (!input.value.trim()) {
+        if (validate && !input.value.trim()) {
             if (input && label) {
                 input.classList.add('error-input');
                 label.classList.add('error-label');
+                label.textContent = `Please, enter the ${FieldNames[field]}`;
             }
-            label.textContent = `Please, enter the ${FieldNames[field]}`;
             setErrors(prev => ({
                 ...prev,
                 [field]: false
             }));
-        } else if (field === 'phoneNumber' && !/^\+\d+$/.test(input.value)) {
+        } else if (validate && (field === 'dateOfBirth') && (inputDate > currentDate)) {
             input.classList.add('error-input');
             label.classList.add('error-label');
-            label.textContent = "Phone number must contain only digits";
 
-            setErrors(prev => ({
-                ...prev,
-                [field]: false
-            }));
-        } else if (field === 'dateOfBirth' && (inputDate > currentDate)) {
-            input.classList.add('error-input');
-            label.classList.add('error-label');
             label.textContent = "The date must be less than or equal to the current date.";
 
             setErrors(prev => ({
@@ -61,7 +52,7 @@ const usePatientForm = (initialValues) => {
         }
     };
 
-    const handleChange = (field) => (e) => {
+    const handleChange = (field, validate = true) => (e) => {
         const input = e.target;
         const label = document.querySelector(`label[for="${field}"]`);
 
@@ -70,35 +61,14 @@ const usePatientForm = (initialValues) => {
             [field]: input.value
         }));
 
-        updateInputState(field, input, label);
+        updateInputState(field, input, label, validate);
     };
 
-    const handleBlur = (field) => (event) => {
+    const handleBlur = (field, validate = true) => (event) => {
         const input = event.target;
         const label = document.querySelector(`label[for="${field}"]`);
 
-        updateInputState(field, input, label);
-    };
-
-    const resetForm = () => {
-        setFormData(initialValues);
-        setErrors({
-            firstName: false,
-            lastName: false,
-            middleName: true,
-            phoneNumber: false,
-            dateOfBirth: false,
-        });
-    };
-
-    const mapPatientData = (patient) => {
-        setFormData({
-            firstName: patient.firstName || '',
-            lastName: patient.lastName || '',
-            middleName: patient.middleName || '',
-            phoneNumber: patient.phoneNumber || '',
-            dateOfBirth: patient.dateOfBirth || '',
-        });
+        updateInputState(field, input, label, validate);
     };
 
     const handlePhoneNumberKeyDown = (event) => {
@@ -109,15 +79,25 @@ const usePatientForm = (initialValues) => {
         }
     };
 
+    const resetForm = () => {
+        setFormData(initialValues);
+        setErrors({
+            firstName: false,
+            lastName: false,
+            phoneNumber: false,
+            dateOfBirth: false,
+        });
+    };
+
     return {
         formData,
         setFormData,
         errors,
+        setErrors,
         handleChange,
         handleBlur,
         handlePhoneNumberKeyDown,
         resetForm,
-        mapPatientData,
         isFormValid: Object.values(errors).every(value => value),
     };
 };

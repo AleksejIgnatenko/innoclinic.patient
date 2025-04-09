@@ -34,7 +34,6 @@ const useAppointmentForm = (initialAppointmentValues) => {
         [field]: true
       }));
     }
-    console.log(appointmentErrors);
   };
 
   const handleAppointmentChange = (field) => (event) => {

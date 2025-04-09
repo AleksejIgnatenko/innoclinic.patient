@@ -27,7 +27,7 @@ import LogOutFetchAsync from "../../api/Authorization.API/LogOutFetchAsync";
 
 export default function Sidebar({ currentTheme, toggleTheme }) {
     const location = useLocation();
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
 
     const [photo, setPhoto] = useState(null);
     const [profile, setProfile] = useState(null);
@@ -124,7 +124,7 @@ export default function Sidebar({ currentTheme, toggleTheme }) {
 
                 if (findService) {
                     const timeSlotSize = findService.serviceCategory.timeSlotSize;
-                    const fetchedTimeSlots = await GetAllAvailableTimeSlotsFetchAsync(appointmentFormData.date, timeSlotSize);
+                    const fetchedTimeSlots = await GetAllAvailableTimeSlotsFetchAsync(appointmentFormData.date, timeSlotSize, appointmentFormData.doctorId);
                     const timeSlots = fetchedTimeSlots.map((timeSlot) => {
                         const [startTime, endTime] = timeSlot.split(' - ');
                         const id = `${startTime.replace(':', '')}${endTime.replace(':', '')}`;
@@ -146,15 +146,15 @@ export default function Sidebar({ currentTheme, toggleTheme }) {
             }
         };
 
-        if (appointmentFormData.medicalServiceId && appointmentFormData.date) {
+        if (appointmentFormData.medicalServiceId && appointmentFormData.date && appointmentFormData.doctorId) {
             fetchData();
         }
-    }, [appointmentFormData.medicalServiceId, appointmentFormData.date]);
+    }, [appointmentFormData.medicalServiceId, appointmentFormData.date, appointmentFormData.doctorId]);
 
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         if (params.get('modal') === 'create-appointment' && !isCreateAppointmentModalOpen) {
-            const doctorId = params.get('doctorId'); 
+            const doctorId = params.get('doctorId');
             setIsCreateAppointmentModalOpen(true);
             if (doctorId) {
                 const selectedDoctor = doctors.find(doctor => doctor.id === doctorId);
@@ -238,7 +238,7 @@ export default function Sidebar({ currentTheme, toggleTheme }) {
         appointmentErrors.medicalServiceId = true;
     };
 
-    async function handleLogOut () {
+    async function handleLogOut() {
         await LogOutFetchAsync();
     };
 
@@ -265,20 +265,20 @@ export default function Sidebar({ currentTheme, toggleTheme }) {
 
         setIsSignInModalOpen(false);
         setIsSignUpModalOpen(false);
-        
+
         const newModalState = !isCreateAppointmentModalOpen;
         setIsCreateAppointmentModalOpen(newModalState);
-    
+
         const currentPath = location.pathname;
         const params = new URLSearchParams(location.search);
-    
+
         if (!newModalState) {
             params.delete('modal');
             params.delete('doctorId');
         }
-    
+
         const appointmentPath = `${currentPath}?${params.toString()}`;
-        navigate(appointmentPath); 
+        navigate(appointmentPath);
     };
 
     const handleSignIn = async (e) => {
@@ -295,14 +295,21 @@ export default function Sidebar({ currentTheme, toggleTheme }) {
 
     const handleCreateAppointment = async (e) => {
         e.preventDefault();
-        const appointmentData = {
-            doctorId: appointmentFormData.doctorId,
-            medicalServiceId: appointmentFormData.medicalServiceId,
-            date: appointmentFormData.date,
-            time: appointmentFormData.time,
-            isApproved: false
-        };
-        await CreateAppointmentFetchAsync(appointmentData);
+
+        let jwtToken = Cookies.get('accessToken');
+        if (!jwtToken) {
+            toggleSignInModal();
+        } else {
+
+            const appointmentData = {
+                doctorId: appointmentFormData.doctorId,
+                medicalServiceId: appointmentFormData.medicalServiceId,
+                date: appointmentFormData.date,
+                time: appointmentFormData.time,
+                isApproved: false
+            };
+            await CreateAppointmentFetchAsync(appointmentData);
+        }
     };
 
     return (
@@ -529,7 +536,7 @@ export default function Sidebar({ currentTheme, toggleTheme }) {
                                         id="medicalServiceId"
                                         value={selectMedicalServiceName}
                                         onChange={(e) => handleMedicalServiceChange(e.target.value)}
-                                        onBlur={handleAppointmentBlur('medicalServiceId')}
+                                        onBlur={handleAppointmentBlur('medicalService')}
                                         required
                                     />
                                     {filteredMedicalServices.length > 0 && (

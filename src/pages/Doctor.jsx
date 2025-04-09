@@ -53,7 +53,7 @@ function Doctor() {
                 <div style={{ marginTop: '100px' }}>
                     <ProfileCard>
                         <div className="img-container">
-                            <img src={photo} alt="" className="img-area"/>
+                            <img src={photo} alt="" className={photo ? '' : 'img-area'} />
                         </div>
                         {doctor ? (
                             <>

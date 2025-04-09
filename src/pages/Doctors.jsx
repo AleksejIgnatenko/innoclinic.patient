@@ -195,7 +195,7 @@ export default function Doctors() {
                                     {editableDoctors.map((editableDoctor, index) => (
                                         <ProfileCard key={index} className="card" id={editableDoctor.id} onClick={() => navigate(`/doctor/${editableDoctor.id}`)}>
                                             <div class="img-container">
-                                                <img src={editableDoctor.photoUrl} alt="" className="img-area" />
+                                                <img src={editableDoctor.photoUrl} alt="" className={editableDoctor.photoUrl ? '' : 'img-area'} />
                                             </div>
                                             <div className="profile-content">
                                                 <p>Full name: {editableDoctor.doctorFullName}</p>
@@ -271,7 +271,7 @@ export default function Doctors() {
             {isOfficeModalOpen && (
                 <FormModal title={"Office"} showCloseButton={true} onClose={toggleOfficeModalClick}>
                     <div className="img-container">
-                        <img src={selectedOfficePhoto} alt="" className="img-area" />
+                        <img src={selectedOfficePhoto} alt="" className={selectedOfficePhoto ? '' : 'img-area'} />
                     </div>
                     <div className="profile-content">
                         {selectedOffice ? (

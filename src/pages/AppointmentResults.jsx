@@ -71,8 +71,8 @@ export default function AppointmentResults() {
             medicalServiceName: appointment.medicalService.serviceName,
             complaints,
             conclusion,
-            diagnosis,
             recommendations,
+            diagnosis,
         }));
     };
 
@@ -83,7 +83,20 @@ export default function AppointmentResults() {
     const handleDownloadAppointmentsResults = async (appointmentResultId) => {
         const appointmentResult = editableAppointmentResults.find(appointmentResult => appointmentResult.id === appointmentResultId);
         
-        await CreateAppointmentResultDocumentFetchAsync(appointmentResult);
+        const createAppoimentResultDocumentRequest = {
+            date: appointmentResult.date,
+            patientFullName: appointmentResult.patientFullName,
+            dateOfBirth: appointmentResult.dateOfBirth,
+            doctorFullName: appointmentResult.doctorFullName,
+            specialization: appointmentResult.specialization,
+            medicalServiceName: appointmentResult.medicalServiceName,
+            complaints: appointmentResult.complaints,
+            conclusion: appointmentResult.conclusion,
+            recommendations: appointmentResult.recommendations,
+            diagnosis: appointmentResult.diagnosis,
+        }
+
+        await CreateAppointmentResultDocumentFetchAsync(createAppoimentResultDocumentRequest);
     }
 
     return (

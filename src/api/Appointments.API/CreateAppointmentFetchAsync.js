@@ -6,11 +6,11 @@ async function CreateAppointmentFetchAsync(appointmentModelRequest) {
     try {
         let jwtToken = Cookies.get('accessToken');
         if (!jwtToken) {
-            await RefreshTokenFetchAsync(); 
+            await RefreshTokenFetchAsync();
             jwtToken = Cookies.get('accessToken');
         }
 
-        const response = await fetch(`http://localhost:5005/api/Appointment`, {
+        const response = await fetch(`${AppointmentAPI}/Appointment`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -19,9 +19,7 @@ async function CreateAppointmentFetchAsync(appointmentModelRequest) {
             body: JSON.stringify(appointmentModelRequest)
         });
 
-        if (response.ok) {
-           console.log("ok");
-        } else {
+        if (!response.ok) {
             const data = await response.json();
             console.log(data);
         }

@@ -5,7 +5,7 @@ import { ButtonBase } from '../components/atoms/ButtonBase';
 import FilterModal from "../components/organisms/FilterModal";
 import CheckboxWrapper from "../components/molecules/CheckboxWrapper";
 import '../styles/pages/Doctors.css';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import GetAllSpecializationFetchAsync from "../api/Services.API/GetAllSpecializationFetchAsync";
 import GetAllOfficesFetchAsync from "../api/Offices.API/GetAllOfficesFetchAsync";
@@ -17,6 +17,7 @@ import FormModal from "../components/organisms/FormModal";
 
 export default function Doctors() {
     const navigate = useNavigate();
+    const location = useLocation();
 
     const [doctors, setDoctors] = useState([]);
     const [editableDoctors, setEditableDoctors] = useState([]);
@@ -74,17 +75,47 @@ export default function Doctors() {
     useEffect(() => {
         const lowerCaseSearchTerm = searchTerm.toLowerCase();
         const filteredDoctors = doctors.filter(item => {
-            return (
-                item.firstName.toLowerCase().includes(lowerCaseSearchTerm) ||
-                item.lastName.toLowerCase().includes(lowerCaseSearchTerm) ||
-                item.middleName.toLowerCase().includes(lowerCaseSearchTerm)
-            );
-        })
-
+            const fullName = `${item.firstName} ${item.middleName} ${item.lastName}`.toLowerCase();
+            
+            return fullName.includes(lowerCaseSearchTerm) || 
+                   item.firstName.toLowerCase().includes(lowerCaseSearchTerm) ||
+                   item.lastName.toLowerCase().includes(lowerCaseSearchTerm) ||
+                   item.middleName.toLowerCase().includes(lowerCaseSearchTerm);
+        });
+    
         const formattedDoctors = formatDoctors(filteredDoctors);
-
         setEditableDoctors(formattedDoctors);
+    
+        const currentPath = location.pathname;
+        const params = new URLSearchParams(location.search);
+        
+        if (searchTerm) {
+            params.set('search', searchTerm);
+        } else {
+            params.delete('search');
+        }
+    
+        const updatedPath = `${currentPath}?${params.toString()}`;
+        navigate(updatedPath);
     }, [searchTerm, doctors]);
+
+    useEffect(() => {
+        const queryParams = new URLSearchParams(location.search);
+        const modalParam = queryParams.get('modal');
+        const searchParam = queryParams.get('search');
+
+        if (searchParam) {
+            setSearchTerm(searchParam);
+        } else {
+            setSearchTerm('');
+        }
+
+        if (modalParam === 'filter') {
+            setIsFilterModalOpen(true);
+        } else if (modalParam === 'map') {
+            setIsShowMap(true);
+        }
+    }, [location.search]);
 
     const formatDoctors = (doctors) => {
         return doctors.map(({ id, photoUrl, firstName, lastName, middleName, cabinetNumber, specialization, careerStartYear, office }) => ({
@@ -103,11 +134,35 @@ export default function Doctors() {
     };
 
     const toggleFilterModalClick = () => {
-        setIsFilterModalOpen(!isFilterModalOpen);
-    }
+        const newModalState = !isFilterModalOpen;
+        const currentPath = location.pathname;
+        const params = new URLSearchParams(location.search);
+    
+        if (newModalState) {
+            params.set('modal', 'filter');
+        } else {
+            params.delete('modal');
+        }
+    
+        const updatedPath = `${currentPath}?${params.toString()}`;
+        setIsFilterModalOpen(newModalState);
+        navigate(updatedPath);
+    };
 
     const toggleMapModalClick = () => {
-        setIsShowMap(!isShowMap);
+        const newModalState = !isShowMap;
+        const currentPath = location.pathname;
+        const params = new URLSearchParams(location.search);
+
+        if (newModalState) {
+            params.set('modal', 'map');
+        } else {
+            params.delete('modal');
+        }
+
+        const updatedPath = `${currentPath}?${params.toString()}`;
+        setIsShowMap(newModalState);
+        navigate(updatedPath);
     };
 
     const handleFilterOfficeChange = (office) => {
@@ -138,6 +193,12 @@ export default function Doctors() {
         const formattedDoctors = formatDoctors(filteredDoctors);
         setEditableDoctors(formattedDoctors);
         setIsFilterModalOpen(!isFilterModalOpen);
+        
+        const currentPath = location.pathname;
+        const params = new URLSearchParams(location.search);
+        params.delete('modal');
+        const updatedPath = `${currentPath}?${params.toString()}`;
+        navigate(updatedPath);
     };
 
     const handleClearFilter = () => {
@@ -146,6 +207,12 @@ export default function Doctors() {
         setSelectedOffices([]);
         setSelectedSpecializations([]);
         setIsFilterModalOpen(!isFilterModalOpen);
+
+        const currentPath = location.pathname;
+        const params = new URLSearchParams(location.search);
+        params.delete('modal');
+        const updatedPath = `${currentPath}?${params.toString()}`;
+        navigate(updatedPath);
     }
 
     const handleSelectOfficeClick = async (office) => {
@@ -175,6 +242,7 @@ export default function Doctors() {
                 showFilterIcon={true}
                 toggleFilterModalClick={toggleFilterModalClick}
                 showSearch={true}
+                searchTerm={searchTerm}
                 setSearchTerm={setSearchTerm}
                 showMapIcon={true}
                 toggleMapModalClick={toggleMapModalClick}
@@ -211,60 +279,60 @@ export default function Doctors() {
                         </>
                     )}
 
-                    {isFilterModalOpen && (
-                        <FilterModal onClose={() => setIsFilterModalOpen(false)}>
-                            <div className="filter-section">
-                                <h2 className="filter-modal-title">Offices</h2>
-                                <div className="filter-checkbox-container">
-                                    {offices.length > 0 ? (
-                                        offices.map(office => (
-                                            <div className="filter-checkbox-group" key={office.id}>
-                                                <CheckboxWrapper
-                                                    id={office.id}
-                                                    name="office-address"
-                                                    value={`${office.city} ${office.street} ${office.houseNumber} ${office.officeNumber}`}
-                                                    checked={selectedOffices.some(selectedOffice => selectedOffice.id === office.id)}
-                                                    onChange={() => handleFilterOfficeChange(office)}
-                                                    label={`${office.city} ${office.street} ${office.houseNumber} ${office.officeNumber}`}
-                                                />
-                                            </div>
-                                        ))
-                                    ) : (
-                                        <p className="no-items">Offices not found.</p>
-                                    )}
-                                </div>
-                            </div>
-                            <div className="filter-section">
-                                <h2 className="filter-modal-title">Specializations</h2>
-                                <div className="filter-checkbox-container">
-                                    {specializations.length > 0 ? (
-                                        specializations.map(specialization => (
-                                            <div className="filter-checkbox-group" key={specialization.id}>
-                                                <CheckboxWrapper
-                                                    id={specialization.id}
-                                                    name="specialization-name"
-                                                    value={specialization.specializationName}
-                                                    checked={selectedSpecializations.some(selectedSpecialization => selectedSpecialization.id === specialization.id)}
-                                                    onChange={() => handleFilterSpecializationChange(specialization)}
-                                                    label={specialization.specializationName}
-                                                />
-                                            </div>
-                                        ))
-                                    ) : (
-                                        <p className="no-items">Specializations not found.</p>
-                                    )}
-                                </div>
-                            </div>
-                            <div className="form-actions">
-                                <ButtonBase type="button" onClick={handleApplyFilter}>
-                                    Apply
-                                </ButtonBase>
-                                <ButtonBase type="button" variant="secondary" onClick={handleClearFilter}>
-                                    Clear
-                                </ButtonBase>
-                            </div>
-                        </FilterModal>
-                    )}
+{isFilterModalOpen && (
+    <FilterModal onClose={toggleFilterModalClick}>
+        <div className="filter-section">
+            <h2 className="filter-modal-title">Offices</h2>
+            <div className="filter-checkbox-container">
+                {offices && offices.length > 0 ? (
+                    offices.map(office => (
+                        <div className="filter-checkbox-group" key={office.id}>
+                            <CheckboxWrapper
+                                id={office.id}
+                                name="office-address"
+                                value={office.address}
+                                checked={selectedOffices && selectedOffices.some(selectedOffice => selectedOffice.id === office.id)}
+                                onChange={() => handleFilterOfficeChange(office)}
+                                label={office.city}
+                            />
+                        </div>
+                    ))
+                ) : (
+                    <p>Offices not found.</p>
+                )}
+            </div>
+        </div>
+        <div className="filter-section">
+            <h2 className="filter-modal-title">Specializations</h2>
+            <div className="filter-checkbox-container">
+                {specializations && specializations.length > 0 ? (
+                    specializations.map(specialization => (
+                        <div className="filter-checkbox-group" key={specialization.id}>
+                            <CheckboxWrapper
+                                id={specialization.id}
+                                name="specialization-name"
+                                value={specialization.specializationName}
+                                checked={selectedSpecializations && selectedSpecializations.some(selectedSpecialization => selectedSpecialization.id === specialization.id)}
+                                onChange={() => handleFilterSpecializationChange(specialization)}
+                                label={specialization.specializationName}
+                            />
+                        </div>
+                    ))
+                ) : (
+                    <p>Specializations not found.</p>
+                )}
+            </div>
+        </div>
+        <div className="form-actions">
+            <ButtonBase type="button" onClick={handleApplyFilter}>
+                Apply
+            </ButtonBase>
+            <ButtonBase type="button" variant="secondary" onClick={handleClearFilter}>
+                Clear
+            </ButtonBase>
+        </div>
+    </FilterModal>
+)}
                 </div>
             )}
 
@@ -291,9 +359,9 @@ export default function Doctors() {
                 </FormModal>
             )}
 
-            {isShowMap &&
+            {isShowMap && 
                 <CustomMap
-                    items={offices}
+                    items={offices || []}
                     handleMarkerClick={handleSelectOfficeClick}
                     onClose={toggleMapModalClick}
                 />

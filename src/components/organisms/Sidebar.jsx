@@ -153,7 +153,13 @@ export default function Sidebar({ currentTheme, toggleTheme }) {
 
     useEffect(() => {
         const params = new URLSearchParams(location.search);
-        if (params.get('modal') === 'create-appointment' && !isCreateAppointmentModalOpen) {
+        const modal = params.get('modal');
+        
+        setIsCreateAppointmentModalOpen(false);
+        setIsSignUpModalOpen(false);
+        setIsSignInModalOpen(false);
+
+        if (modal === 'create-appointment') {
             const doctorId = params.get('doctorId');
             setIsCreateAppointmentModalOpen(true);
             if (doctorId) {
@@ -166,6 +172,10 @@ export default function Sidebar({ currentTheme, toggleTheme }) {
                     setSelectDoctorName('');
                 }
             }
+        } else if (modal === 'sign-up') {
+            setIsSignUpModalOpen(true);
+        } else if (modal === 'sign-in') {
+            setIsSignInModalOpen(true);
         }
     }, [location.search]);
 
@@ -228,6 +238,10 @@ export default function Sidebar({ currentTheme, toggleTheme }) {
         appointmentFormData.doctorId = doctor.id;
         setFilteredDoctors([]);
         setSelectDoctorName(doctor.firstName + ' ' + doctor.lastName + ' ' + doctor.middleName);
+
+        const office = officeOptions.filter(office => office.id === doctor.office.id);
+        setOfficeOptions(office);
+
         appointmentErrors.doctorId = true;
     };
 
@@ -252,12 +266,23 @@ export default function Sidebar({ currentTheme, toggleTheme }) {
     };
 
     const toggleSignUpModal = () => {
-        resetSignUpForm();
-
-        setIsSignUpModalOpen(!isSignUpModalOpen);
+        resetAppointmentForm();
 
         setIsSignInModalOpen(false);
-        setIsCreateAppointmentModalOpen(false);
+        setIsSignUpModalOpen(false);
+
+        const newModalState = !isSignUpModalOpen;
+        setIsSignUpModalOpen(newModalState);
+
+        const currentPath = location.pathname;
+        const params = new URLSearchParams(location.search);
+
+        if (!newModalState) {
+            params.delete('modal');
+        }
+
+        const appointmentPath = `${currentPath}?${params.toString()}`;
+        navigate(appointmentPath);
     };
 
     const toggleCreateAppointmentModal = () => {
@@ -398,21 +423,21 @@ export default function Sidebar({ currentTheme, toggleTheme }) {
                     ) : (
                         <>
                             <li>
-                                <Link onClick={toggleSignInModal}>
+                                <Link to="?modal=sign-in">
                                     <i className='bx bx-log-in'></i>
                                     <span className="link_name">Login</span>
                                 </Link>
                                 <ul className="sub-menu blank">
-                                    <li><Link className="link_name" onClick={toggleSignInModal}>Login</Link></li>
+                                    <li><Link className="link_name" to="?modal=sign-in">Login</Link></li>
                                 </ul>
                             </li>
                             <li>
-                                <Link onClick={toggleSignUpModal}>
+                                <Link to="?modal=sign-up">
                                     <i className='bx bx-user-plus'></i>
                                     <span className="link_name">Sign Up</span>
                                 </Link>
                                 <ul className="sub-menu blank">
-                                    <li><Link className="link_name" onClick={toggleSignUpModal}>Sign Up</Link></li>
+                                    <li><Link className="link_name" to="?modal=sign-up">Sign Up</Link></li>
                                 </ul>
                             </li>
                         </>
@@ -444,9 +469,11 @@ export default function Sidebar({ currentTheme, toggleTheme }) {
                                 <ButtonBase type="submit" disabled={!isSignInFormValid}>
                                     Sign In
                                 </ButtonBase>
-                                <ButtonBase variant="secondary" onClick={toggleSignUpModal}>
-                                    Sign Up
-                                </ButtonBase>
+                                <Link to="?modal=sign-up">
+                                    <ButtonBase variant="secondary">
+                                        Sign Up
+                                    </ButtonBase>
+                                </Link>
                             </div>
                         </FormModal>
                     )}
@@ -483,9 +510,11 @@ export default function Sidebar({ currentTheme, toggleTheme }) {
                                 <ButtonBase type="submit" disabled={!isSignUpFormValid}>
                                     Sign Up
                                 </ButtonBase>
-                                <ButtonBase variant="secondary" onClick={toggleSignInModal}>
-                                    Sign In
-                                </ButtonBase>
+                                <Link to="?modal=sign-in">
+                                    <ButtonBase variant="secondary">
+                                        Sign In
+                                    </ButtonBase>
+                                </Link>
                             </div>
                         </FormModal>
                     )}
@@ -525,7 +554,7 @@ export default function Sidebar({ currentTheme, toggleTheme }) {
                                         <div className="filtred-list">
                                             {filteredDoctors.map(doctor => (
                                                 <h5 key={doctor.id} onClick={() => handleDoctorSelect(doctor)}>
-                                                    {doctor.firstName} {doctor.lastName}
+                                                    {doctor.firstName} {doctor.lastName} {doctor.middleName}
                                                 </h5>
                                             ))}
                                         </div>

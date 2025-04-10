@@ -121,8 +121,8 @@ function CreatePatientProfile() {
                         label="Middle Name"
                         id="middleName"
                         value={formData.middleName}
-                        onBlur={handleBlur('middleName')}
-                        onChange={handleChange('middleName')}
+                        onBlur={handleBlur('middleName', false)}
+                        onChange={handleChange('middleName', false)}
                         required
                     />
                     <InputWrapper

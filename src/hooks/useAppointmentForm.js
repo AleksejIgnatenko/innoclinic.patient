@@ -10,24 +10,40 @@ const useAppointmentForm = (initialAppointmentValues) => {
     time: false,
   });
 
-  const updateAppointmentInputState = (field, inputElement, labelElement) => {
-    if (!inputElement.value.trim()) {
-      if (inputElement && labelElement) {
-        inputElement.classList.add('error-input');
-        labelElement.classList.add('error-label');
+  const updateAppointmentInputState = (field, input, label) => {
+    let currentDate;
+    let inputDate;
 
-        labelElement.textContent = `Please, enter ${FieldNames[field]}`;
+    if (field === 'date') {
+      currentDate = new Date();
+      inputDate = new Date(input.value);
+    }
+
+    if (!input.value.trim()) {
+      if (input && label) {
+        input.classList.add('error-input');
+        label.classList.add('error-label');
+
+        label.textContent = `Please, enter ${FieldNames[field]}`;
       }
       setAppointmentErrors(prev => ({
         ...prev,
         [field]: false
       }));
+    } else if ((field === 'date') && (inputDate <= currentDate)) {
+      input.classList.add('error-input');
+      label.classList.add('error-label');
+      label.textContent = "The date must be greater than the current date.";
+      setAppointmentErrors(prev => ({
+          ...prev,
+          [field]: false
+      }));
     } else {
-      if (inputElement && labelElement) {
-        inputElement.classList.remove('error-input');
-        labelElement.classList.remove('error-label');
+      if (input && label) {
+        input.classList.remove('error-input');
+        label.classList.remove('error-label');
 
-        labelElement.textContent = `${FieldNames[field]}`;
+        label.textContent = `${FieldNames[field]}`;
       }
       setAppointmentErrors(prev => ({
         ...prev,
@@ -37,28 +53,28 @@ const useAppointmentForm = (initialAppointmentValues) => {
   };
 
   const handleAppointmentChange = (field) => (event) => {
-    const inputElement = event.target;
-    const labelElement = document.querySelector(`label[for="${field}"]`);
+    const input = event.target;
+    const label = document.querySelector(`label[for="${field}"]`);
 
     setAppointmentFormData(prev => ({
       ...prev,
-      [field]: inputElement.value
+      [field]: input.value
     }));
 
-    updateAppointmentInputState(field, inputElement, labelElement);
+    updateAppointmentInputState(field, input, label);
   };
 
   const handleAppointmentBlur = (field) => (event) => {
-    const inputElement = event.target;
-    const labelElement = document.querySelector(`label[for="${field}"]`);
+    const input = event.target;
+    const label = document.querySelector(`label[for="${field}"]`);
 
-    updateAppointmentInputState(field, inputElement, labelElement);
+    updateAppointmentInputState(field, input, label);
   };
 
   const resetAppointmentForm = () => {
     setAppointmentFormData(initialAppointmentValues);
     setAppointmentErrors({});
-};
+  };
 
   return {
     appointmentFormData,

@@ -27,6 +27,7 @@ import UpdatePatientFecthAsync from "../api/Profiles.API/UpdatePatientFecthAsync
 import CreatePhotoFetchAsync from "../api/Documents.API/CreatePhotoFetchAsync";
 import UpdatePhotoFetchAsync from "../api/Documents.API/UpdatePhotoFetchAsync";
 import ImageUploader from "../components/organisms/ImageUploader";
+import UpdateAppointmentFetchAsync from "../api/Appointments.API/UpdateAppointmentFetchAsync";
 
 function Profile() {
     const location = useLocation();
@@ -138,9 +139,8 @@ function Profile() {
     }, []);
 
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchAllAvailableTimeSlotsFetch = async () => {
             try {
-                setIsLoading(true);
                 const findService = services.find(s => s.id === appointmentFormData.medicalServiceId);
 
                 if (findService) {
@@ -162,13 +162,11 @@ function Profile() {
 
             } catch (error) {
                 console.error('Error fetching services:', error);
-            } finally {
-                setIsLoading(false);
             }
         };
 
         if (appointmentFormData.medicalServiceId && appointmentFormData.date && appointmentFormData.doctorId) {
-            fetchData();
+            fetchAllAvailableTimeSlotsFetch();
         }
     }, [appointmentFormData.medicalServiceId, appointmentFormData.date, appointmentFormData.doctorId]);
 
@@ -230,6 +228,10 @@ function Profile() {
         appointmentFormData.doctorId = doctor.id;
         setFilteredDoctors([]);
         setSelectDoctorName(doctor.firstName + ' ' + doctor.lastName + ' ' + doctor.middleName);
+
+        const office = officeOptions.filter(office => office.id === doctor.office.id);
+        setOfficeOptions(office);
+
         appointmentErrors.doctorId = true;
     };
 
@@ -277,13 +279,15 @@ function Profile() {
         if(appointmentId) {
             const appointment = appointments.find(appointment => appointment.id == appointmentId);
             const doctor = doctors.find(doctor => doctor.id === appointment.doctor.id);
-            console.log(appointment);
+            const office = officeOptions.filter(office => office.id === doctor.office.id);
+            setOfficeOptions(office);
 
             setSelectSpecializationName(doctor.specialization.specializationName);
             setSelectDoctorName(`${doctor.firstName} ${doctor.lastName} ${doctor.middleName}`);
             setSelectMedicalServiceName(appointment.medicalService.serviceName);
 
             setAppointmentFormData({
+                id: appointment.id,
                 doctorId: doctor.id,
                 medicalServiceId: appointment.medicalService.id,
                 officeId: doctor.office.id,
@@ -304,15 +308,16 @@ function Profile() {
 
     const handleUpdateAppointment = async (e) => {
         e.preventDefault();
-        const appointmentData = {
+        const updateAppointmentRequest = {
+            id: appointmentFormData.id,
             doctorId: appointmentFormData.doctorId,
             medicalServiceId: appointmentFormData.medicalServiceId,
             date: appointmentFormData.date,
             time: appointmentFormData.time,
             isApproved: false
         };
-        console.log(appointmentData);
-        //await CreateAppointmentFetchAsync(appointmentData);
+        
+        await UpdateAppointmentFetchAsync(updateAppointmentRequest);
     };
 
     const toggleEditClick = () => {
@@ -515,7 +520,7 @@ function Profile() {
                                                             </td>
                                                         ) : (
                                                             <td>
-                                                                <IconBase name='bx-time-five' onClick={() => toggleUpdateAppointmentModal(appointment.id)} />
+                                                                <IconBase name={"bx-pencil"} onClick={() => toggleUpdateAppointmentModal(appointment.id)} />
                                                             </td>
                                                         )}
                                                     </tr>
@@ -563,7 +568,7 @@ function Profile() {
                                         <div className="filtred-list">
                                             {filteredDoctors.map(doctor => (
                                                 <h5 key={doctor.id} onClick={() => handleDoctorSelect(doctor)}>
-                                                    {doctor.firstName} {doctor.lastName}
+                                                    {doctor.firstName} {doctor.lastName} {doctor.middleName}
                                                 </h5>
                                             ))}
                                         </div>
